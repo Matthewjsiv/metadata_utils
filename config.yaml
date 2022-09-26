@@ -1,0 +1,19 @@
+---
+algorithms:
+  irl: 'irl_node'
+  mppi: 'mppi_node'
+  super_odometry: 'super_odometry_node'
+  lidar_mapping: 'atv_lidar_mapping'
+#topic(s) to check for to know whether sensor is in bag
+sensors:
+  #should this be camera or multisense
+  multisense:
+    - '/multisense/right/image_rect'
+    - '/multisense/left/image_rect' 
+  velodyne_1:
+    - '/velodyne_1/velodyne_points'
+  velodyne_2:
+    - '/velodyne_2/velodyne_points'
+  novatel:
+    - '/asdfasdf'
+intervention: '/mux/intervention'
