@@ -1,6 +1,6 @@
 ---
 algorithms:
-  irl: 'irl_node'
+  irl: 'irl_node' #not actually what these are called
   mppi: 'mppi_node'
   super_odometry: 'super_odometry_node'
   lidar_mapping: 'atv_lidar_mapping'
@@ -9,7 +9,7 @@ sensors:
   #should this be camera or multisense
   multisense:
     - '/multisense/right/image_rect'
-    - '/multisense/left/image_rect' 
+    - '/multisense/left/image_rect'
   velodyne_1:
     - '/velodyne_1/velodyne_points'
   velodyne_2:
@@ -17,3 +17,13 @@ sensors:
   novatel:
     - '/asdfasdf'
 intervention: '/mux/intervention'
+keywords:
+  context:
+    - collect
+    - test
+    - learning_physics
+    - sara
+  condition:
+    - sunny
+    - snowy
+    - muddy

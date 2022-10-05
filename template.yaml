@@ -1,5 +1,6 @@
 ---
 bagname: 'temp.bag'
+folder: 'testing'
 pre:
   algorithms:
     perception:
