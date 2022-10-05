@@ -1,0 +1,30 @@
+---
+data_folder: '/home/striest/rosbags/'
+experiment_name: 'launch_test'
+pre:
+  launch:
+    rviz:
+      args:
+
+    super_odometry:
+      args:
+
+    lidar_mapping:
+      args:
+
+    lethal_height_costmapping:
+      args:
+        lethal_height: 0.3
+
+    mppi:
+      args:
+
+  context:
+  #keywords - collect, test, learning_physics, sara
+    - 'collect'
+    - 'learning_physics'
+  conditions:
+  #keywords - sunny, snow, muddy
+    - 'sunny'
+  course:
+    - 'green'
