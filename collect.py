@@ -52,6 +52,8 @@ def main(args):
     fout = os.path.join(bn, 'tmuxp_config.yaml')
     with open(fout, "w") as f:
         yaml.dump(tmuxp_config, f)
+
+    os.execlp('tmuxp', 'tmuxp', 'load', fout)
     
 #    post.process(fout)
 
