@@ -25,7 +25,7 @@ launch:
     launch_cmd: "rosrun rviz rviz"
     launch_delay: 0.0
 
-  velodynes: 
+  velodynes:
     type: sensors
     launch_cmd: "roslaunch velodyne_launch velodyne_transformed"
     launch_delay: 0.0
@@ -34,6 +34,15 @@ launch:
     type: platform
     launch_cmd: "roslaunch yamaha_gps_utils waypoints.launch"
     launch_delay: 0.0
+
+other:
+  record:
+    type: data_collect
+    launch_cmd: "rosbag record -a"
+    launch_delay: 5.0
+  live_notes:
+    type: data_collect
+    launch_cmd: "python3 live_notes.py"
 
 #topic(s) to check for to know whether sensor is in bag
 sensors:
@@ -46,7 +55,8 @@ sensors:
   velodyne_2:
     - '/velodyne_2/velodyne_points'
   novatel:
-    - '/asdfasdf'
+    - '/odometry/filtered_odom'
+    - '/novatel/imu/data '
 intervention: '/mux/intervention'
 keywords:
   context:
