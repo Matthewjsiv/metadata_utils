@@ -56,7 +56,7 @@ sensors:
     - '/velodyne_2/velodyne_points'
   novatel:
     - '/odometry/filtered_odom'
-    - '/novatel/imu/data '
+    - '/novatel/imu/data'
 intervention: '/mux/intervention'
 keywords:
   context:
