@@ -35,6 +35,18 @@ launch:
     launch_cmd: "roslaunch yamaha_gps_utils waypoints.launch"
     launch_delay: 0.0
 
+  sensors_all:
+    type: platform
+    on_atv: 1
+    launch_cmd: "roslaunch launchers sensors.launch"
+    launch_delay: 0.0
+
+  joystick_drive:
+    type: platform
+    on_atv: 1
+    launch_cmd: "roslaunch launchers joystick_drive.launch"
+    launch_delay: 1.0
+
 other:
   record:
     type: data_collect

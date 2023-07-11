@@ -13,7 +13,7 @@ def main(filename):
 
     # filename = "text_entries.txt"
     print("Text Entry Program")
-    print("Enter 'quit' to exit.")
+    print("Enter 'q' to exit.")
 
     interventions = 0
 

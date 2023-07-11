@@ -20,7 +20,7 @@ base_tmuxp = {
     ]
 }
 
-def make_shell_command(base_cmd, args={}, delay=0.):
+def make_shell_command(base_cmd, args={}, delay=0., on_atv = False):
     """
     make a tmuxp shell command from a base command, args and a delay
     Args:
@@ -28,12 +28,21 @@ def make_shell_command(base_cmd, args={}, delay=0.):
         args: The args to append to the base command (dict of <arg_name: arg_val>)
         delay: The time in s to wait before executing the command
     """
-    out = {
-        "shell_command":[
-            "cd ~/physics_atv_ws",
-            "source ~/physics_atv_ws/devel/setup.bash",
-        ]
-    }
+    if on_atv:
+        out = {
+            "shell_command":[
+                "sshp",
+                "cd ~/physics_atv_ws",
+                "source ~/physics_atv_ws/devel/setup.bash",
+            ]
+        }
+    else:
+        out = {
+            "shell_command":[
+                "cd ~/physics_atv_ws",
+                "source ~/physics_atv_ws/devel/setup.bash",
+            ]
+        }
 
     out["shell_command"].append("sleep {}".format(delay))
     cmd = base_cmd
@@ -57,7 +66,8 @@ def generate_tmuxp_config(config, metadata, now=None, descriptor=None):
         shell_cmd = make_shell_command(
             base_cmd=config['launch'][launch_k]['launch_cmd'],
             args=launch_v['args'],
-            delay=config['launch'][launch_k]['launch_delay']
+            delay=config['launch'][launch_k]['launch_delay'],
+            on_atv='on_atv' in config['launch'][launch_k]
         )
 
         out_config['windows'][0]['panes'].append(shell_cmd)
