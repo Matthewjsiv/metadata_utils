@@ -1,7 +1,7 @@
 # metadata_utils
-NOTE: Current working version is actually the 20221005_striest branch, I need to merge it back in.
 Framework for automatically launching modules and generating useful metadata for rosbags before, during, and after data collection.
 
+NOTE: Current working version is actually the 20221005_striest branch, I need to merge it back in.
 
 ## How to Use
 ### Set Up
