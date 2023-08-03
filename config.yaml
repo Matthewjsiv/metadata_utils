@@ -55,6 +55,9 @@ other:
   live_notes:
     type: data_collect
     launch_cmd: "python3 live_notes.py"
+  topics_monitor:
+    type: platform
+    launch_cmd: "python3 topics_monitor.py"
 
 #topic(s) to check for to know whether sensor is in bag
 sensors:
