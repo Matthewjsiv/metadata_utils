@@ -101,7 +101,7 @@ def generate_tmuxp_config(config, metadata, now=None, descriptor=None):
             out["shell_command"].append(cmd)
             shell_cmd = out
             out_config['windows'][0]['panes'].append(shell_cmd)
-        if k == 'live_notes':
+        elif k == 'live_notes':
             out = {
                     "shell_command":[
                         # "cd ~/physics_atv_ws",
@@ -109,6 +109,17 @@ def generate_tmuxp_config(config, metadata, now=None, descriptor=None):
                     ]
                 }
             cmd = config['other'][k]['launch_cmd'] + " -f " + os.path.join(metadata['data_folder'], metadata['experiment_name'],now,descriptor) + ".txt"
+            out["shell_command"].append(cmd)
+            shell_cmd = out
+            out_config['windows'][0]['panes'].append(shell_cmd)
+        else:
+            out = {
+                    "shell_command":[
+                        # "cd ~/physics_atv_ws",
+                        "source ~/physics_atv_ws/devel/setup.bash",
+                    ]
+                }
+            cmd = config['other'][k]['launch_cmd']
             out["shell_command"].append(cmd)
             shell_cmd = out
             out_config['windows'][0]['panes'].append(shell_cmd)
