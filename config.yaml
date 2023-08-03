@@ -8,12 +8,12 @@ launch:
   lidar_mapping:
     type: perception
     launch_cmd: "roslaunch physics_atv_lidar_mapping local_mapping_lidar.launch"
-    launch_delay: 2.0
+    launch_delay: 10.0
 
   lethal_height_costmapping:
     type: perception
     launch_cmd: "roslaunch physics_atv_lidar_mapping lethal_height_costmap_yamaha.launch"
-    launch_delay: 3.0
+    launch_delay: 10.0
 
   mppi:
     type: controls
@@ -22,7 +22,7 @@ launch:
 
   rviz:
     type: viz
-    launch_cmd: "rosrun rviz rviz"
+    launch_cmd: "rosrun rviz rviz -d /home/yamaha/physics_atv_ws/rviz/top_down_gps_waypoints.rviz"
     launch_delay: 0.0
 
   velodynes:
@@ -39,13 +39,13 @@ launch:
     type: platform
     on_atv: 1
     launch_cmd: "roslaunch launchers sensors.launch"
-    launch_delay: 0.0
+    launch_delay: 4.0
 
   joystick_drive:
     type: platform
     on_atv: 1
     launch_cmd: "roslaunch launchers joystick_drive.launch"
-    launch_delay: 1.0
+    launch_delay: 3.0
 
 other:
   record:
