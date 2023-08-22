@@ -1,0 +1,41 @@
+---
+data_folder: '/home/yamaha/rosbags'
+experiment_name: 'matthew_experiments'
+pre:
+  driver: Matthew
+  robot: yamaha_viking
+  launch:
+    # rviz:
+    #   args:
+    # sensors_all:
+      # args:
+    # super_odometry:
+    #   args:
+    joystick_drive:
+      args:
+    # lidar_mapping:
+    #   args:
+    # lethal_height_costmapping:
+    #   args:
+    #     lethal_height: 0.1
+    # controls_no_SO:
+      # args:
+    # waypoint_manager:
+    #   args:
+    #     mission_file: './missions/full_course_dense.yaml'
+        
+  other:
+    record:
+    live_notes:
+
+  context:
+  #keywords - collect, test, learning_physics, sara
+    - 'testing'
+    - 'local_planner'
+    - 'novatel'
+    - 'learning_physics'
+  conditions:
+  #keywords - sunny, snow, muddy
+    - 'sunny'
+  course:
+    - 'gupta_permold'

@@ -1,0 +1,24 @@
+bagname: temp.bag
+duration: 119.996338
+interventions: 3
+undesirable: 5
+pre:
+  driver: Matthew
+  robot: yamaha_viking
+  algorithms:
+    control:
+    - mppi
+    perception:
+    - irl
+    - super_odometry
+    - atv_lidar_mapping
+  conditions:
+  - sunny
+  context:
+  - collect
+  course:
+  - green
+sensors:
+- multisense
+- velodyne_1
+- velodyne_2

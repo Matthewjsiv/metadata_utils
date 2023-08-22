@@ -1,9 +1,84 @@
 ---
-algorithms:
-  irl: 'irl_node' #not actually what these are called
-  mppi: 'mppi_node'
-  super_odometry: 'super_odometry_node'
-  lidar_mapping: 'atv_lidar_mapping'
+launch:
+  super_odometry:
+    type: slam
+    launch_cmd: "roslaunch super_odometry yamaha.launch"
+    launch_delay: 1.0
+
+  lidar_mapping:
+    type: perception
+    launch_cmd: "roslaunch physics_atv_lidar_mapping local_mapping_lidar.launch"
+    launch_delay: 7.0
+
+  lethal_height_costmapping:
+    type: perception
+    launch_cmd: "roslaunch physics_atv_lidar_mapping lethal_height_costmap_yamaha.launch"
+    launch_delay: 7.0
+
+  mppi:
+    type: controls
+    launch_cmd: "roslaunch torch_mpc mppi.launch"
+    launch_delay: 10.0
+
+  mppi_throttle:
+    type: controls
+    launch_cmd: "roslaunch torch_mpc mppi_throttle_main.launch"
+    launch_delay: 10.0
+
+  remove_superodom:
+    type: slam
+    launch_cmd: "roslaunch torch_mpc remove_superodom.launch"
+    launch_delay: 2.0
+  
+  superodom_lidar:
+    type: slam
+    launch_cmd: "roslaunch torch_mpc superodom_lidar.launch"
+    launch_delay: 4.0
+
+  rviz:
+    type: viz
+    launch_cmd: "rosrun rviz rviz -d ~/physics_atv_ws/rviz/top_down_gps_waypoints.rviz"
+    launch_delay: 0.0
+
+  velodynes:
+    type: sensors
+    launch_cmd: "roslaunch velodyne_launch velodyne_transformed"
+    launch_delay: 0.0
+
+  waypoint_manager:
+    type: platform
+    launch_cmd: "roslaunch yamaha_gps_utils waypoints.launch"
+    launch_delay: 4.0
+
+  sensors_all:
+    type: platform
+    on_atv: 1
+    launch_cmd: "roslaunch launchers sensors.launch"
+    launch_delay: 0.0
+
+  joystick_drive:
+    type: platform
+    on_atv: 1
+    launch_cmd: "roslaunch launchers joystick_drive.launch"
+    launch_delay: 0.0
+
+  generate_mission:
+    type: platform
+    launch_cmd: "roslaunch yamaha_gps_utils generate_mission.launch"
+    launch_delay: 4.0
+
+other:
+  record:
+    type: data_collect
+    launch_cmd: "rosbag record -a"
+    launch_delay: 15.0
+  live_notes:
+    type: data_collect
+    launch_cmd: "python3 live_notes.py"
+  topics_monitor:
+    type: platform
+    launch_cmd: "python3 topics_monitor.py"
+
 #topic(s) to check for to know whether sensor is in bag
 sensors:
   #should this be camera or multisense
@@ -15,7 +90,8 @@ sensors:
   velodyne_2:
     - '/velodyne_2/velodyne_points'
   novatel:
-    - '/asdfasdf'
+    - '/odometry/filtered_odom'
+    - '/novatel/imu/data'
 intervention: '/mux/intervention'
 keywords:
   context:
