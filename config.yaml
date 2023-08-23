@@ -60,7 +60,7 @@ launch:
     type: platform
     on_atv: 1
     launch_cmd: "roslaunch launchers joystick_drive.launch"
-    launch_delay: 0.0
+    launch_delay: 5.0
 
   generate_mission:
     type: platform
