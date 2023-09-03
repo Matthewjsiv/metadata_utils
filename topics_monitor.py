@@ -3,7 +3,12 @@ import rospy
 from std_msgs.msg import String
 from PySide2 import QtWidgets, QtGui, QtCore
 from sensor_msgs.msg import Image, PointCloud2
+from std_msgs.msg import Header
 from nav_msgs.msg import Odometry
+# from rostopic import ROSTopicHz
+import rostopic
+import numpy as np
+import yaml
 
 class ROSSubscriber(QtWidgets.QWidget):
     def __init__(self):
@@ -13,21 +18,41 @@ class ROSSubscriber(QtWidgets.QWidget):
 
         self.update_timer = QtCore.QTimer(self)
         self.update_timer.timeout.connect(self.update_all)
-        self.update_rate = 1
+        self.update_rate = 1.0
         self.update_timer.start(self.update_rate * 1000)  # Update rates every 1 second
 
     def init_ros(self):
         rospy.init_node("pyside_ros_subscriber")
         # self.camera_prefixes = ['/camera_topic_1']
         self.camera_prefixes = ['/multisense/left/image_rect_color']
-        self.lidar_prefixes = ['/velodyne_1/velodyne_points', '/velodyne_2/velodyne_points']
+        self.lidar_prefixes = ['/velodyne_1/velodyne_points', '/velodyne_2/velodyne_points', '/livox/lidar']
         # self.lidar_prefixes = ['/lidar_topic_1', '/lidar_topic_2']
+
+        # self.other_list = {'/multisense/left/image_rect_color':8,'/velodyne_1/velodyne_points':8,'/livox/lidar':8}
+        with open('topic_rates.yaml', 'r') as yaml_file:
+            self.other_list = yaml.safe_load(yaml_file)
+
+        self.gsubscribers = {}
+        self.other_msg_stats = {}
+        # self.bad_list = np.zeros(len(self.other_list))
+        # self.inv_dict = {}
+        self.bad_list = []
+        self.bad_ts_list = []
+
+        for i,topic in enumerate(self.other_list):
+            # message_type = rospy.get_param(topic + '/type')
+            # topic += '/header'
+            # print(topic)
+            TopicType, topic_str, _ = rostopic.get_topic_class(topic)
+            self.gsubscribers[topic] = rospy.Subscriber(topic, TopicType, self.generic_callback, callback_args=topic)
+            self.other_msg_stats[topic] = np.zeros(10)
 
         self.camera_rates = {prefix: 0 for prefix in self.camera_prefixes}
         self.lidar_rates = {prefix: 0 for prefix in self.lidar_prefixes}
         self.camera_boxes = {}
         self.lidar_boxes = {}
         self.gps_boxes = {}
+        self.misc_boxes = {}
         self.subscribe_to_topics()
 
     def init_ui(self):
@@ -43,6 +68,9 @@ class ROSSubscriber(QtWidgets.QWidget):
         self.gps_label = QtWidgets.QLabel("GPS Topics:")
         self.gps_layout = QtWidgets.QVBoxLayout()
 
+        self.other_label = QtWidgets.QLabel("Miscellaneous:")
+        self.other_layout = QtWidgets.QVBoxLayout()
+
         main_layout = QtWidgets.QVBoxLayout()
         main_layout.addWidget(self.camera_label)
         main_layout.addLayout(self.camera_layout)
@@ -50,6 +78,10 @@ class ROSSubscriber(QtWidgets.QWidget):
         main_layout.addLayout(self.lidar_layout)
         main_layout.addWidget(self.gps_label)
         main_layout.addLayout(self.gps_layout)
+
+        main_layout.addWidget(self.other_label)
+        main_layout.addLayout(self.other_layout)
+
 
         self.setLayout(main_layout)
 
@@ -75,6 +107,12 @@ class ROSSubscriber(QtWidgets.QWidget):
         self.gps_boxes['GPS_coord'] = self.create_box("GPS XY Good")
         self.gps_layout.addWidget(self.gps_boxes['GPS_coord'])
         self.gps_xy = [0,0]
+
+        self.misc_boxes['rates'] = self.create_box("")
+        self.other_layout.addWidget(self.misc_boxes['rates'])
+
+        self.misc_boxes['ts'] = self.create_box("")
+        self.other_layout.addWidget(self.misc_boxes['ts'])
 
 
 
@@ -104,10 +142,44 @@ class ROSSubscriber(QtWidgets.QWidget):
         # print(topic)
         self.camera_rates[topic] += 1
 
+        secs = msg.header.stamp.to_sec()
+        if np.abs(secs - rospy.Time.now().to_sec()) > 2:
+            # print(secs, rospy.Time.now().to_sec())
+            if topic not in self.bad_ts_list:
+                self.bad_ts_list.append(topic)
+
     @QtCore.Slot(PointCloud2)
     def lidar_rate_callback(self, msg, topic):
         # topic = rospy.get_caller_id()
         self.lidar_rates[topic] += 1
+
+        secs = msg.header.stamp.to_sec()
+        if np.abs(secs - rospy.Time.now().to_sec()) > 2:
+            # print(secs, rospy.Time.now().to_sec())
+            if topic not in self.bad_ts_list:
+                self.bad_ts_list.append(topic)
+
+    @QtCore.Slot(PointCloud2)
+    def generic_callback(self, msg, topic):
+        # topic = rospy.get_caller_id()
+        # self.lidar_rates[topic] += 1
+        # print(topic)
+        # print(msg.header.stamp)
+        secs = msg.header.stamp.to_sec()
+        buff = self.other_msg_stats[topic]
+        buff[1:] = buff[:-1]
+        buff[0] = secs
+        dt = 1.0/((buff[:-1]-buff[1:]).mean())
+        # print(dt, topic)
+        if dt < self.other_list[topic]:
+            if topic not in self.bad_list:
+                self.bad_list.append(topic)
+
+        if np.abs(secs - rospy.Time.now().to_sec()) > 2:
+            # print(secs, rospy.Time.now().to_sec())
+            if topic not in self.bad_ts_list:
+                self.bad_ts_list.append(topic)
+
 
     @QtCore.Slot(Odometry)
     def gps_callback(self, msg):
@@ -115,9 +187,16 @@ class ROSSubscriber(QtWidgets.QWidget):
         self.gps_rates['/odometry/filtered_odom'] += 1
         self.gps_xy = [msg.pose.pose.position.x, msg.pose.pose.position.y]
 
+        secs = msg.header.stamp.to_sec()
+        if np.abs(secs - rospy.Time.now().to_sec()) > 2:
+            # print(secs, rospy.Time.now().to_sec())
+            if '/odometry/filtered_odom' not in self.bad_ts_list:
+                self.bad_ts_list.append('/odometry/filtered_odom')
+
     def update_all(self):
         self.update_rates()
         self.update_other()
+        self.update_other_rates()
 
     def update_rates(self):
         for topic, box in self.camera_boxes.items():
@@ -131,7 +210,8 @@ class ROSSubscriber(QtWidgets.QWidget):
 
         for topic, box in self.lidar_boxes.items():
             rate = self.lidar_rates[topic] / self.update_rate
-            hz = rate/self.update_rate
+            # hz = rate/self.update_rate
+            hz = rate
             box.label.setText(topic + ": " + f"{hz:.2f} Hz")
             self.update_box_color(box, rate)
             self.lidar_rates[topic] = 0
@@ -155,8 +235,36 @@ class ROSSubscriber(QtWidgets.QWidget):
             self.gps_boxes['GPS_coord'].label.setText("XY Vals Good")
             self.gps_boxes['GPS_coord'].setStyleSheet("background-color: green;")
             self.gps_boxes['GPS_coord'].setFixedSize(self.gps_boxes['GPS_coord'].sizeHint())
-    def update_box_color(self, box, rate):
-        if rate < 1:
+
+    def update_other_rates(self):
+        if len(self.bad_list) == 0:
+            self.misc_boxes['rates'].label.setText('Good')
+            self.misc_boxes['rates'].setStyleSheet("background-color: green;")
+            self.misc_boxes['rates'].setFixedSize(self.misc_boxes['rates'].sizeHint())
+        else:
+            badstr = ''
+            for bad in self.bad_list:
+                badstr += bad + '\n'
+            self.bad_list = []
+            self.misc_boxes['rates'].label.setText(badstr)
+            self.misc_boxes['rates'].setStyleSheet("background-color: red;")
+            self.misc_boxes['rates'].setFixedSize(self.misc_boxes['rates'].sizeHint())
+
+        if len(self.bad_ts_list) == 0:
+            self.misc_boxes['rates'].label.setText('Good')
+            self.misc_boxes['rates'].setStyleSheet("background-color: green;")
+            self.misc_boxes['rates'].setFixedSize(self.misc_boxes['rates'].sizeHint())
+        else:
+            badstr = ''
+            for bad in self.bad_ts_list:
+                badstr += bad + '\n'
+            self.bad_ts_list = []
+            self.misc_boxes['ts'].label.setText(badstr)
+            self.misc_boxes['ts'].setStyleSheet("background-color: red;")
+            self.misc_boxes['ts'].setFixedSize(self.misc_boxes['ts'].sizeHint())
+
+    def update_box_color(self, box, rate, desired=8):
+        if rate < desired:
             box.setStyleSheet("background-color: red;")
         else:
             box.setStyleSheet("background-color: green;")
