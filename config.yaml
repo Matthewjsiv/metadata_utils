@@ -8,21 +8,36 @@ launch:
   lidar_mapping:
     type: perception
     launch_cmd: "roslaunch physics_atv_lidar_mapping local_mapping_lidar.launch"
-    launch_delay: 10.0
+    launch_delay: 7.0
 
   lethal_height_costmapping:
     type: perception
     launch_cmd: "roslaunch physics_atv_lidar_mapping lethal_height_costmap_yamaha.launch"
-    launch_delay: 10.0
+    launch_delay: 7.0
 
   mppi:
     type: controls
     launch_cmd: "roslaunch torch_mpc mppi.launch"
+    launch_delay: 10.0
+
+  mppi_throttle:
+    type: controls
+    launch_cmd: "roslaunch torch_mpc mppi_throttle_main.launch"
+    launch_delay: 10.0
+
+  remove_superodom:
+    type: slam
+    launch_cmd: "roslaunch torch_mpc remove_superodom.launch"
+    launch_delay: 2.0
+  
+  superodom_lidar:
+    type: slam
+    launch_cmd: "roslaunch torch_mpc superodom_lidar.launch"
     launch_delay: 4.0
 
   rviz:
     type: viz
-    launch_cmd: "rosrun rviz rviz -d /home/yamaha/physics_atv_ws/rviz/top_down_gps_waypoints.rviz"
+    launch_cmd: "rosrun rviz rviz -d ~/physics_atv_ws/rviz/top_down_gps_waypoints.rviz"
     launch_delay: 0.0
 
   velodynes:
@@ -33,25 +48,31 @@ launch:
   waypoint_manager:
     type: platform
     launch_cmd: "roslaunch yamaha_gps_utils waypoints.launch"
-    launch_delay: 0.0
+    launch_delay: 4.0
 
   sensors_all:
     type: platform
     on_atv: 1
     launch_cmd: "roslaunch launchers sensors.launch"
-    launch_delay: 4.0
+    launch_delay: 0.0
 
   joystick_drive:
     type: platform
     on_atv: 1
     launch_cmd: "roslaunch launchers joystick_drive.launch"
-    launch_delay: 3.0
+    launch_delay: 5.0
+
+  generate_mission:
+    type: platform
+    launch_cmd: "roslaunch yamaha_gps_utils generate_mission.launch"
+    launch_delay: 4.0
 
 other:
   record:
     type: data_collect
-    launch_cmd: "rosbag record -a"
-    launch_delay: 5.0
+    launch_cmd: "atvbag"
+    launch_delay: 15.0
+
   live_notes:
     type: data_collect
     launch_cmd: "python3 live_notes.py"

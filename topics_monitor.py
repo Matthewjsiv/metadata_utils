@@ -10,6 +10,7 @@ import rostopic
 import numpy as np
 import yaml
 
+
 class ROSSubscriber(QtWidgets.QWidget):
     def __init__(self):
         super().__init__()
@@ -25,6 +26,7 @@ class ROSSubscriber(QtWidgets.QWidget):
         rospy.init_node("pyside_ros_subscriber")
         # self.camera_prefixes = ['/camera_topic_1']
         self.camera_prefixes = ['/multisense/left/image_rect_color']
+
         self.lidar_prefixes = ['/velodyne_1/velodyne_points', '/velodyne_2/velodyne_points', '/livox/lidar']
         # self.lidar_prefixes = ['/lidar_topic_1', '/lidar_topic_2']
 
@@ -47,12 +49,15 @@ class ROSSubscriber(QtWidgets.QWidget):
             self.gsubscribers[topic] = rospy.Subscriber(topic, TopicType, self.generic_callback, callback_args=topic)
             self.other_msg_stats[topic] = np.zeros(10)
 
+
         self.camera_rates = {prefix: 0 for prefix in self.camera_prefixes}
         self.lidar_rates = {prefix: 0 for prefix in self.lidar_prefixes}
         self.camera_boxes = {}
         self.lidar_boxes = {}
         self.gps_boxes = {}
+
         self.misc_boxes = {}
+
         self.subscribe_to_topics()
 
     def init_ui(self):
@@ -68,6 +73,7 @@ class ROSSubscriber(QtWidgets.QWidget):
         self.gps_label = QtWidgets.QLabel("GPS Topics:")
         self.gps_layout = QtWidgets.QVBoxLayout()
 
+
         self.other_label = QtWidgets.QLabel("Miscellaneous:")
         self.other_layout = QtWidgets.QVBoxLayout()
 
@@ -79,9 +85,9 @@ class ROSSubscriber(QtWidgets.QWidget):
         main_layout.addWidget(self.gps_label)
         main_layout.addLayout(self.gps_layout)
 
+
         main_layout.addWidget(self.other_label)
         main_layout.addLayout(self.other_layout)
-
 
         self.setLayout(main_layout)
 
@@ -108,12 +114,12 @@ class ROSSubscriber(QtWidgets.QWidget):
         self.gps_layout.addWidget(self.gps_boxes['GPS_coord'])
         self.gps_xy = [0,0]
 
+
         self.misc_boxes['rates'] = self.create_box("")
         self.other_layout.addWidget(self.misc_boxes['rates'])
 
         self.misc_boxes['ts'] = self.create_box("")
         self.other_layout.addWidget(self.misc_boxes['ts'])
-
 
 
     def create_rate_box(self):
@@ -153,6 +159,7 @@ class ROSSubscriber(QtWidgets.QWidget):
         # topic = rospy.get_caller_id()
         self.lidar_rates[topic] += 1
 
+
         secs = msg.header.stamp.to_sec()
         if np.abs(secs - rospy.Time.now().to_sec()) > 2:
             # print(secs, rospy.Time.now().to_sec())
@@ -187,6 +194,7 @@ class ROSSubscriber(QtWidgets.QWidget):
         self.gps_rates['/odometry/filtered_odom'] += 1
         self.gps_xy = [msg.pose.pose.position.x, msg.pose.pose.position.y]
 
+
         secs = msg.header.stamp.to_sec()
         if np.abs(secs - rospy.Time.now().to_sec()) > 2:
             # print(secs, rospy.Time.now().to_sec())
@@ -210,8 +218,10 @@ class ROSSubscriber(QtWidgets.QWidget):
 
         for topic, box in self.lidar_boxes.items():
             rate = self.lidar_rates[topic] / self.update_rate
+
             # hz = rate/self.update_rate
             hz = rate
+
             box.label.setText(topic + ": " + f"{hz:.2f} Hz")
             self.update_box_color(box, rate)
             self.lidar_rates[topic] = 0
@@ -235,6 +245,7 @@ class ROSSubscriber(QtWidgets.QWidget):
             self.gps_boxes['GPS_coord'].label.setText("XY Vals Good")
             self.gps_boxes['GPS_coord'].setStyleSheet("background-color: green;")
             self.gps_boxes['GPS_coord'].setFixedSize(self.gps_boxes['GPS_coord'].sizeHint())
+
 
     def update_other_rates(self):
         if len(self.bad_list) == 0:
@@ -265,6 +276,7 @@ class ROSSubscriber(QtWidgets.QWidget):
 
     def update_box_color(self, box, rate, desired=8):
         if rate < desired:
+
             box.setStyleSheet("background-color: red;")
         else:
             box.setStyleSheet("background-color: green;")
