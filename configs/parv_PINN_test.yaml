@@ -25,10 +25,11 @@ pre:
     waypoint_manager:
       args: 
         mission_file: "../missions/turnpike_figure8_vel7_3/forward.yaml"
-
+    real_time_vel:
+      args:
     
   other:
-    record:
+    parv_record:
     live_notes:
     topics_monitor:
   context:

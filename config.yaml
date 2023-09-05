@@ -66,11 +66,21 @@ launch:
     type: platform
     launch_cmd: "roslaunch yamaha_gps_utils generate_mission.launch"
     launch_delay: 4.0
+  
+  real_time_vel:
+    type: platform
+    launch_cmd: "python3 ~/physics_atv_ws/src/control/torch_mpc/src/torch_mpc/scripts/ros/real_time_vel.py"
+    launch_delay: 7.0
 
 other:
   record:
     type: data_collect
     launch_cmd: "atvbag"
+    launch_delay: 15.0
+
+  parv_record:
+    type: data_collect
+    launch_cmd: "parvatvbag"
     launch_delay: 15.0
 
   live_notes:
