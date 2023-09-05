@@ -72,6 +72,7 @@ other:
     type: data_collect
     launch_cmd: "atvbag"
     launch_delay: 15.0
+
   live_notes:
     type: data_collect
     launch_cmd: "python3 live_notes.py"
