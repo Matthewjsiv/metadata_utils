@@ -7,10 +7,10 @@ pre:
   launch:
     rviz:
       args:
-    sensors_all:
-      args:
-    joystick_drive:
-      args:
+    # sensors_all:
+    #   args:
+    # joystick_drive:
+    #   args:
     remove_superodom:
       args:
     superodom_lidar:
@@ -21,14 +21,16 @@ pre:
       args:
     mppi_throttle:
       args:
-        node: 'mppi_throttle_50'
+        node: 'mppi_throttle_tartan_50_all'
     waypoint_manager:
-      args:
+      args: 
+        mission_file: "../missions/turnpike_figure8_vel7_3/forward.yaml"
+
     
   other:
     record:
     live_notes:
-
+    topics_monitor:
   context:
   #keywords - collect, test, learning_physics, sara
     - 'collect'

@@ -7,8 +7,8 @@ pre:
   launch:
     rviz:
       args:
-    sensors_all:
-      args:
+    # sensors_all:
+    #   args:
     joystick_drive:
       args:
     remove_superodom:
