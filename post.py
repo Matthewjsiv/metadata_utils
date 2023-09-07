@@ -24,6 +24,7 @@ def process(fname):
 
     parsing.sensors(md, bag)
     parsing.interventions(md, bag)
+    parsing.top_speed(md, bag)
 
     with open(fname, "w") as f:
         yaml.dump(md, f)
@@ -32,25 +33,34 @@ def main(args):
 
     prefix = args.folder
     exp_dirs = os.listdir(prefix)
+    print(prefix)
+    print(exp_dirs)
 
     # print(exp_dirs)
     for dir in exp_dirs:
         fname = prefix + '/' + dir + '/'
         fdirs = os.listdir(fname)
-        bn = glob.glob(fname + "*.bag")[0]
+        bn = glob.glob(fname + "*.bag")
         # print(bn)
 
-        bag = rosbag.Bag(bn)
+        baglist = []
+        for b in bn:
+            bag = rosbag.Bag(b)
+            baglist.append(bag)
 
         with open(fname + 'info.yaml') as f:
             md = yaml.safe_load(f)
 
-        info_dict = yaml.safe_load(subprocess.Popen(['rosbag', 'info', '--yaml', bn], stdout=subprocess.PIPE).communicate()[0])
-        md['duration'] = info_dict['duration']
+        total_duration = 0
+        for b in bn:
+            info_dict = yaml.safe_load(subprocess.Popen(['rosbag', 'info', '--yaml', b], stdout=subprocess.PIPE).communicate()[0])
+            total_duration += info_dict['duration']
+        md['duration'] = total_duration
         # print(info_dict)
     #
-        parsing.sensors(md, bag)
-        parsing.interventions(md, bag)
+        parsing.sensors(md, baglist)
+        parsing.interventions(md, baglist)
+        parsing.top_speed(md, baglist)
 
         with open(fname + 'info.yaml', "w") as f:
             yaml.dump(md, f)

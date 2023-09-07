@@ -112,7 +112,10 @@ class ROSSubscriber(QtWidgets.QWidget):
         self.gps_layout.addWidget(self.gps_boxes['/odometry/filtered_odom'])
         self.gps_boxes['GPS_coord'] = self.create_box("GPS XY Good")
         self.gps_layout.addWidget(self.gps_boxes['GPS_coord'])
+        self.gps_boxes['Speed'] = self.create_box("Speed")
+        self.gps_layout.addWidget(self.gps_boxes['Speed'])
         self.gps_xy = [0,0]
+        self.speed = 0
 
 
         self.misc_boxes['rates'] = self.create_box("")
@@ -193,6 +196,7 @@ class ROSSubscriber(QtWidgets.QWidget):
         # topic = rospy.get_caller_id()
         self.gps_rates['/odometry/filtered_odom'] += 1
         self.gps_xy = [msg.pose.pose.position.x, msg.pose.pose.position.y]
+        self.speed = float(np.linalg.norm([msg.twist.twist.linear.x,msg.twist.twist.linear.y,msg.twist.twist.linear.z]))
 
 
         secs = msg.header.stamp.to_sec()
@@ -245,6 +249,10 @@ class ROSSubscriber(QtWidgets.QWidget):
             self.gps_boxes['GPS_coord'].label.setText("XY Vals Good")
             self.gps_boxes['GPS_coord'].setStyleSheet("background-color: green;")
             self.gps_boxes['GPS_coord'].setFixedSize(self.gps_boxes['GPS_coord'].sizeHint())
+
+        self.gps_boxes['Speed'].label.setText(str(self.speed) + " m/s")
+        self.gps_boxes['Speed'].setStyleSheet("background-color: green;")
+        self.gps_boxes['Speed'].setFixedSize(self.gps_boxes['Speed'].sizeHint())
 
 
     def update_other_rates(self):

@@ -29,7 +29,7 @@ launch:
     type: slam
     launch_cmd: "roslaunch torch_mpc remove_superodom.launch"
     launch_delay: 2.0
-  
+
   superodom_lidar:
     type: slam
     launch_cmd: "roslaunch torch_mpc superodom_lidar.launch"
@@ -66,7 +66,7 @@ launch:
     type: platform
     launch_cmd: "roslaunch yamaha_gps_utils generate_mission.launch"
     launch_delay: 4.0
-  
+
   real_time_vel:
     type: platform
     launch_cmd: "python3 ~/physics_atv_ws/src/control/torch_mpc/src/torch_mpc/scripts/ros/real_time_vel.py"
@@ -104,6 +104,7 @@ sensors:
     - '/odometry/filtered_odom'
     - '/novatel/imu/data'
 intervention: '/mux/intervention'
+top_speed: '/odometry/filtered_odom'
 keywords:
   context:
     - collect
