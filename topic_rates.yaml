@@ -1,4 +1,3 @@
 ---
-/multisense/left/image_rect_color : 8
-/velodyne_1/velodyne_points : 8
-/livox/lidar : 8
+/novatel/imu/data : 80
+/ros_talon/steering_angle : 25

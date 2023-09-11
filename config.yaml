@@ -103,6 +103,9 @@ sensors:
   novatel:
     - '/odometry/filtered_odom'
     - '/novatel/imu/data'
+  racepak:
+    - '/shock_pos'
+    - '/wheel_rpm'
 intervention: '/mux/intervention'
 top_speed: '/odometry/filtered_odom'
 keywords:
