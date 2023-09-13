@@ -7,6 +7,7 @@ import argparse
 import os
 import glob
 import numpy as np
+from tqdm import tqdm
 
 with open('config.yaml') as f:
         CONFIG = yaml.safe_load(f)
@@ -38,7 +39,7 @@ def main(args):
     print(exp_dirs)
 
     # print(exp_dirs)
-    for dir in exp_dirs:
+    for dir in tqdm(exp_dirs):
         fname = prefix + '/' + dir + '/'
         fdirs = os.listdir(fname)
         bn = glob.glob(fname + "*.bag")
@@ -59,8 +60,8 @@ def main(args):
         md['duration'] = total_duration
         # print(info_dict)
     #
-        parsing.sensors(md, baglist)
-        parsing.interventions(md, baglist)
+        # parsing.sensors(md, baglist)
+        # parsing.interventions(md, baglist)
         gps = parsing.top_speed(md, baglist)
 
         np.save(fname + 'gps',gps)
