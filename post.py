@@ -6,6 +6,7 @@ import parsing
 import argparse
 import os
 import glob
+import numpy as np
 
 with open('config.yaml') as f:
         CONFIG = yaml.safe_load(f)
@@ -60,7 +61,9 @@ def main(args):
     #
         parsing.sensors(md, baglist)
         parsing.interventions(md, baglist)
-        parsing.top_speed(md, baglist)
+        gps = parsing.top_speed(md, baglist)
+
+        np.save(fname + 'gps',gps)
 
         with open(fname + 'info.yaml', "w") as f:
             yaml.dump(md, f)

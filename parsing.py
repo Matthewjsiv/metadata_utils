@@ -35,13 +35,18 @@ def interventions(md, baglist):
             intervening = msg.data
     md['interventions'] = num_interventions
 
-def top_speed(md, baglist):
+def top_speed(md, baglist,savegps=True):
     top_speed = 0
     speed_total = 0
     measurement_num = 0
+    if savegps:
+        gps = []
     for bag in baglist:
         for topic, msg, t in bag.read_messages(topics=[CONFIG['top_speed']]):
             speed = np.linalg.norm([msg.twist.twist.linear.x,msg.twist.twist.linear.y, msg.twist.twist.linear.z])
+
+            if savegps:
+                gps.append([msg.pose.pose.position.x,msg.pose.pose.position.y,msg.pose.pose.position.z,msg.twist.twist.linear.x,msg.twist.twist.linear.y, msg.twist.twist.linear.z])
             # print(speed)
             if speed > top_speed:
                 top_speed = speed
@@ -49,7 +54,14 @@ def top_speed(md, baglist):
             measurement_num += 1
 
 
+
+
+
     average_speed = speed_total/measurement_num
     # print(type(average_speed), type(top_speed))
     md['top_speed'] = float(top_speed)
     md['average_speed'] = float(average_speed)
+
+    if savegps:
+        gps = np.array(gps)
+        return gps
