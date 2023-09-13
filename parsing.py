@@ -56,8 +56,11 @@ def top_speed(md, baglist,savegps=True):
 
 
 
-
-    average_speed = speed_total/measurement_num
+    if measurement_num >= 1:
+        average_speed = speed_total/measurement_num
+    else:
+        average_speed = 0
+        print("NO MEASUREMENTS")
     # print(type(average_speed), type(top_speed))
     md['top_speed'] = float(top_speed)
     md['average_speed'] = float(average_speed)
