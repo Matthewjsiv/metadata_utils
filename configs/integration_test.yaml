@@ -1,0 +1,40 @@
+---
+data_folder: '/home/atv/rosbags'
+experiment_name: 'integration'
+pre:
+  driver: Matthew
+  robot: yamaha_viking
+  launch:
+    rviz:
+      args:
+    lidar_mapping:
+      args:
+    cvar_maxent_irl:
+      args:
+        obstacle_threshold: 2.0
+    waypoint_manager:
+        args:
+    mppi_throttle:
+      args:
+
+#    sensors_all:
+#      args:
+#    super_odometry:
+#      args:
+#    lethal_height_costmapping:
+#      args:
+#        lethal_height: 0.3
+
+  other:
+    record:
+    live_notes:
+
+  context:
+  #keywords - collect, test, learning_physics, sara
+    - 'collect'
+    - 'learning_physics'
+  conditions:
+  #keywords - sunny, snow, muddy
+    - 'sunny'
+  course:
+    - 'green'
