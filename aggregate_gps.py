@@ -31,6 +31,11 @@ def main(args):
 
         shutil.copy(inname,outname)
 
+        inname = prefix + '/' + dir + '/info.yaml'
+        outname = savedir + '/' + dir + '.yaml'
+
+        shutil.copy(inname,outname)
+
 
 
 if __name__ == "__main__":
