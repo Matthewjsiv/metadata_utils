@@ -2,7 +2,7 @@ import sys
 import rospy
 from std_msgs.msg import String
 from PySide2 import QtWidgets, QtGui, QtCore
-from sensor_msgs.msg import Image, PointCloud2
+from sensor_msgs.msg import Image, PointCloud2, Joy
 from std_msgs.msg import Header
 from nav_msgs.msg import Odometry
 # from rostopic import ROSTopicHz
@@ -25,6 +25,7 @@ class ROSSubscriber(QtWidgets.QWidget):
     def init_ros(self):
         rospy.init_node("pyside_ros_subscriber")
         # self.camera_prefixes = ['/camera_topic_1']
+
         self.camera_prefixes = ['/multisense/left/image_rect_color']
 
         self.lidar_prefixes = ['/velodyne_1/velodyne_points', '/velodyne_2/velodyne_points', '/livox/lidar']
@@ -64,6 +65,10 @@ class ROSSubscriber(QtWidgets.QWidget):
         self.setWindowTitle("ROS Subscriber with PySide")
         self.resize(400, 300)
 
+        self.auto_label = QtWidgets.QLabel("Autonomy Status:")
+        self.auto_layout = QtWidgets.QVBoxLayout()
+        self.auto_status = ""
+
         self.camera_label = QtWidgets.QLabel("Camera Topics:")
         self.camera_layout = QtWidgets.QVBoxLayout()
 
@@ -78,6 +83,8 @@ class ROSSubscriber(QtWidgets.QWidget):
         self.other_layout = QtWidgets.QVBoxLayout()
 
         main_layout = QtWidgets.QVBoxLayout()
+        main_layout.addWidget(self.auto_label)
+        main_layout.addLayout(self.auto_layout)
         main_layout.addWidget(self.camera_label)
         main_layout.addLayout(self.camera_layout)
         main_layout.addWidget(self.lidar_label)
@@ -107,6 +114,9 @@ class ROSSubscriber(QtWidgets.QWidget):
             rospy.Subscriber(topic, PointCloud2, self.lidar_rate_callback, callback_args=topic)
 
         rospy.Subscriber('/odometry/filtered_odom', Odometry, self.gps_callback)
+
+        rospy.Subscriber('/mux/joy', Joy, self.auto_callback)
+
         self.gps_rates = {'/odometry/filtered_odom' : 0}
         self.gps_boxes['/odometry/filtered_odom'] = self.create_rate_box()
         self.gps_layout.addWidget(self.gps_boxes['/odometry/filtered_odom'])
@@ -123,6 +133,9 @@ class ROSSubscriber(QtWidgets.QWidget):
 
         self.misc_boxes['ts'] = self.create_box("")
         self.other_layout.addWidget(self.misc_boxes['ts'])
+
+        self.auto_box = self.create_box("")
+        self.auto_layout.addWidget(self.auto_box)
 
 
     def create_rate_box(self):
@@ -205,6 +218,11 @@ class ROSSubscriber(QtWidgets.QWidget):
             if '/odometry/filtered_odom' not in self.bad_ts_list:
                 self.bad_ts_list.append('/odometry/filtered_odom')
 
+    @QtCore.Slot(Joy)
+    def auto_callback(self, msg):
+        # topic = rospy.get_caller_id()
+        self.auto_status = msg.header.frame_id
+
     def update_all(self):
         self.update_rates()
         self.update_other()
@@ -253,6 +271,13 @@ class ROSSubscriber(QtWidgets.QWidget):
         self.gps_boxes['Speed'].label.setText(str(self.speed) + " m/s")
         self.gps_boxes['Speed'].setStyleSheet("background-color: green;")
         self.gps_boxes['Speed'].setFixedSize(self.gps_boxes['Speed'].sizeHint())
+
+        self.auto_box.label.setText(self.auto_status)
+        if self.auto_status == 'teleop':
+            self.auto_box.setStyleSheet("background-color: red;")
+        else:
+            self.auto_box.setStyleSheet("background-color: green;")
+        self.auto_box.setFixedSize(self.auto_box.sizeHint())
 
 
     def update_other_rates(self):
