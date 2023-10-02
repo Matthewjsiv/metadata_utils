@@ -11,7 +11,7 @@ pre:
       args:
     cvar_maxent_irl:
       args:
-        obstacle_threshold: 2.0
+        obstacle_threshold: 0.0
     waypoint_manager:
         args:
     mppi_throttle:
