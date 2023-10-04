@@ -1,0 +1,32 @@
+---
+data_folder: '/home/yamaha/rosbags'
+experiment_name: 'parv_experiments'
+pre:
+  driver: Matthew
+  robot: yamaha_viking
+  launch:
+    rviz:
+      args:
+    # sensors_all:
+    #   args:
+    joystick_drive:
+      args:
+    remove_superodom:
+      args:
+    generate_mission:
+      args:
+    real_time_vel:
+      args:
+  other:
+    parv_record:
+    live_notes:
+
+  context:
+  #keywords - collect, test, learning_physics, sara
+    - 'collect'
+    - 'learning_physics'
+  conditions:
+  #keywords - sunny, snow, muddy
+    - 'sunny'
+  course:
+    - 'green'
