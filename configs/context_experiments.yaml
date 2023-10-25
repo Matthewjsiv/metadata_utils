@@ -1,0 +1,25 @@
+---
+data_folder: '/home/yamaha/rosbags'
+experiment_name: 'context_test'
+pre:
+  driver: Matthew
+  robot: yamaha_viking
+  launch:
+    speed_adaptation:
+      args:
+    roughness_cost:
+      args:
+
+  other:
+    live_notes:
+    record:
+
+  context:
+  #keywords - collect, test, learning_physics, sara
+    - 'collect'
+    - 'learning_physics'
+  conditions:
+  #keywords - sunny, snow, muddy
+    - 'sunny'
+  course:
+    - 'green'

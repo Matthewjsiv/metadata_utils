@@ -20,6 +20,16 @@ launch:
     launch_cmd: "roslaunch maxent_irl_maps cvar_maxent_irl_yamaha.launch"
     launch_delay: 7.0
 
+  speed_adaptation:
+    type: learning
+    launch_cmd: "roslaunch context_adaptation speed_adaptation.launch"
+    launch_delay: 1.0
+
+  roughness_cost:
+    type: learning
+    launch_cmd: "roslaunch context_adaptation cost_publisher.launch"
+    launch_delay: 1.0
+
   mppi:
     type: controls
     launch_cmd: "roslaunch torch_mpc mppi.launch"
