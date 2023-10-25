@@ -7,8 +7,8 @@ pre:
   launch:
     # rviz:
     #   args:
-    # sensors_all:
-      # args:
+    sensors_all:
+      args:
     # super_odometry:
     #   args:
     joystick_drive:
@@ -25,8 +25,9 @@ pre:
     #     mission_file: './missions/full_course_dense.yaml'
         
   other:
-    record:
-    live_notes:
+    # record:
+    # live_notes:
+    system_monitor:
 
   context:
   #keywords - collect, test, learning_physics, sara

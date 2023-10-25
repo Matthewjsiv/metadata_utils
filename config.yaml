@@ -27,7 +27,8 @@ launch:
 
   mppi_throttle:
     type: controls
-    launch_cmd: "roslaunch torch_mpc mppi_throttle_50.launch"
+#    launch_cmd: "roslaunch torch_mpc mppi_throttle_50.launch"
+    launch_cmd: "roslaunch torch_mpc mppi_throttle.launch"
     launch_delay: 10.0
 
   remove_superodom:
@@ -52,7 +53,12 @@ launch:
 
   waypoint_manager:
     type: platform
-    launch_cmd: "roslaunch yamaha_gps_utils waypoints.launch"
+    launch_cmd: "roslaunch yamaha_gps_utils mission_selector.launch"
+    launch_delay: 4.0
+
+  waypoint_graph_planner:
+    type: platform
+    launch_cmd: "roslaunch yamaha_gps_utils graph_planner.launch"
     launch_delay: 4.0
 
   sensors_all:
@@ -64,7 +70,13 @@ launch:
   joystick_drive:
     type: platform
     on_atv: 1
-    launch_cmd: "roslaunch launchers joystick_drive.launch"
+    launch_cmd: "reconnect_can & reconnect_can & roslaunch launchers joystick_drive.launch"
+    launch_delay: 5.0
+
+  joystick_vel_drive:
+    type: platform
+    on_atv: 1
+    launch_cmd: "reconnect_can & reconnect_can & roslaunch launchers joystick_vel_drive.launch"
     launch_delay: 5.0
 
   generate_mission:
@@ -76,6 +88,10 @@ launch:
     type: platform
     launch_cmd: "python3 ~/physics_atv_ws/src/control/torch_mpc/src/torch_mpc/scripts/ros/real_time_vel.py"
     launch_delay: 7.0
+  multisense:
+    type: platform
+    launch_cmd: "roslaunch multisense_bringup multisense.launch"
+    launch_delay: 1.0
 
 other:
   record:

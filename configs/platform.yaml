@@ -1,0 +1,26 @@
+---
+data_folder: /home/yamaha/rosbags
+experiment_name: tartandrive
+no_folder: 1
+pre:
+  conditions:
+  - afternoon
+  - sunny
+  - damp
+  context:
+  - collect
+  course:
+  - gupta
+  driver: Sam
+  launch:
+    joystick_drive:
+#    joystick_vel_drive:
+      args: null
+    sensors_all:
+      args: null
+    multisense:
+      args: null
+  other:
+    topics_monitor: null
+  number_people: 2
+  robot: yamaha_viking

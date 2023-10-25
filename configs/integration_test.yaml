@@ -1,12 +1,14 @@
 ---
-data_folder: '/home/atv/rosbags'
-experiment_name: 'integration'
+data_folder: '/home/yamaha/rosbags'
+experiment_name: 'integration_test'
 pre:
   driver: Matthew
   robot: yamaha_viking
   launch:
     rviz:
       args:
+    super_odometry:
+        args:
     lidar_mapping:
       args:
     cvar_maxent_irl:
@@ -14,7 +16,7 @@ pre:
         obstacle_threshold: 0.0
     waypoint_manager:
         args:
-    mppi_throttle:
+    mppi:
       args:
 
 #    sensors_all:

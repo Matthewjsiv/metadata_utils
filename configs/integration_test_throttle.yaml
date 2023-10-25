@@ -1,0 +1,41 @@
+---
+data_folder: '/home/yamaha/rosbags'
+experiment_name: 'integration_test'
+pre:
+  driver: Matthew
+  robot: yamaha_viking
+  launch:
+    super_odometry:
+        args:
+
+    lidar_mapping:
+      args:
+
+    cvar_maxent_irl:
+      args:
+
+#    waypoint_manager:
+#        args: 
+
+    waypoint_graph_planner:
+        args:
+
+    mppi_throttle:
+      args:
+
+    rviz:
+      args:
+
+  other:
+    record:
+    live_notes:
+
+  context:
+  #keywords - collect, test, learning_physics, sara
+    - 'collect'
+    - 'learning_physics'
+  conditions:
+  #keywords - sunny, snow, muddy
+    - 'sunny'
+  course:
+    - 'green'

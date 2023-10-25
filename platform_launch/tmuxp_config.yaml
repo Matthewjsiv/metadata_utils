@@ -1,0 +1,26 @@
+session_name: platform
+windows:
+- layout: tiled
+  panes:
+  - {}
+  - shell_command:
+    - sshp
+    - cd ~/physics_atv_ws
+    - source ~/physics_atv_ws/devel/setup.bash
+    - sleep 5.0
+    - reconnect_can & reconnect_can & roslaunch launchers joystick_drive.launch
+  - shell_command:
+    - sshp
+    - cd ~/physics_atv_ws
+    - source ~/physics_atv_ws/devel/setup.bash
+    - sleep 0.0
+    - roslaunch launchers sensors.launch
+  - shell_command:
+    - cd ~/physics_atv_ws
+    - source ~/physics_atv_ws/devel/setup.bash
+    - sleep 1.0
+    - roslaunch multisense_bringup multisense.launch
+  - shell_command:
+    - source ~/physics_atv_ws/devel/setup.bash
+    - python3 topics_monitor.py
+  window_name: autonomy

@@ -1,0 +1,218 @@
+CostmapProjection_params_weight: 1000.0
+EuclideanDistanceToGoal_params_goal_radius: 2.0
+EuclideanDistanceToGoal_params_prev_cost_thresh: 15000.0
+EuclideanDistanceToGoal_params_second_goal_penalty: 100000000.0
+EuclideanDistanceToGoal_params_weight: 10000.0
+HardSpeedCost_params_max_lim: 7.0
+HardSpeedCost_params_min_lim: 0.0
+HardSpeedCost_params_optimal_speed: 6.5
+HardSpeedCost_params_smooth_speed_cost: 1000.0
+HardSpeedCost_params_speed_penalty: 100000.0
+HardSpeedCost_params_weight: 1.0
+TipOverCost_params_alpha_del_steer: 1000
+TipOverCost_params_alpha_yaw_rate: 1000
+TipOverCost_params_max_del_steer:
+- 1.1
+- 0.9
+- 0.6
+- 0.3
+TipOverCost_params_max_del_steer_vel_split:
+- 4
+- 5.5
+- 7
+TipOverCost_params_max_steer:
+- 0.55
+- 0.45
+- 0.35
+- 0.2
+TipOverCost_params_max_yaw_rate: -1.0
+TipOverCost_params_weight: 1.0
+WaypointManager_params_goal_radius: 4.0
+feature_extraction_node:
+  blindBack: -3
+  blindFront: 1
+  blindLeft: 1.5
+  blindRight: -1.5
+  mapping_skip_frame: 1
+  max_range: 130
+  min_intensity: 2
+  min_range: 2
+  provide_imu_laser_extrinsic: 1
+  remove_super_odom: false
+  scan_line: 32
+  use_imu_roll_pitch: true
+fixed_frame_id: sensor_init
+imu_odometry_node:
+  acc_n: 0.0131549
+  acc_w: 1.25e-05
+  accel_bias_failure_threshold: 10.0
+  g_norm: 9.80511
+  gyr_n: 0.002786
+  gyr_w: 3.87851e-05
+  gyro_bias_failure_threshold: 5.0
+  laser_type: 32
+  lidar_correction_noise: 0.01
+  provide_imu_laser_extrinsic: 1
+  provide_point_time: 1
+  smooth_factor: 0.0
+  use_imu_roll_pitch: false
+  velocity_failure_threshold: 50.0
+imu_topic: /novatel/imu/data
+imu_update_rate: 100
+joy_ctrl:
+  MAX_TURN: 415
+laser_topic: /velodyne_1/velodyne_points
+lethal_height_costmapper_node:
+  blur_sigma: 2.0
+  clip_low: 0.8
+  costmap_topic: /local_costmap
+  gridmap_topic: /local_gridmap
+  lethal_height: 0.5
+  odom_topic: /integrated_to_init
+  publish_gridmap: true
+  sharpness: 2.0
+lidar_odometry_node:
+  mapping_line_resolution: 0.2
+  mapping_plane_resolution: 0.4
+  max_iterations: 10
+  max_surface_features: 2000
+  provide_imu_laser_extrinsic: 1
+  start_from_previous_map: false
+  use_imu_roll_pitch: false
+  velocity_failure_threshold: 50.0
+localmapping_lidar_node:
+  camera_info_topic: /crl_rzr/arena_camera_node/camera_info
+  cost_offset: 0.0
+  critical_slope_high: 0.7
+  critical_slope_low: 0.4
+  downsample_leafsize_after: 0.2
+  downsample_leafsize_before: 0.2
+  downsample_pointcloud_after: true
+  downsample_pointcloud_after_thresh: 100000
+  downsample_pointcloud_before: true
+  filter_by_range_before: true
+  fixed_frame_id: sensor_init
+  full_lethal_height: 1.0
+  inflate_fill_hole: true
+  lethal_height_weight: 0.7
+  max_clearance: 2.0
+  max_x: 40.0
+  max_y: 40.0
+  median_filter_kernel_size: 5
+  min_ndvi_val: 59
+  min_x: -40.0
+  min_y: -40.0
+  ndvi_image_topic: /crl_rzr/arena_camera_node/image_rect_color/compressed
+  negative_lethal_height_high: 0.0
+  negative_lethal_height_low: 0.0
+  negative_obstacle_max_grid: 3
+  negative_obstacle_min_grid: 2
+  non_lethal_height_high: 0.5
+  non_lethal_height_low: 0.0
+  non_lethal_height_weight: 0.0
+  pcl_buffer_size: 50
+  pcl_skip: 5
+  point_cloud_topic: /velodyne_cloud_registered_with_features
+  positive_lethal_height_high: 100.0
+  positive_lethal_height_low: 1.3
+  publish_point_cloud: true
+  range_dim: 25.0
+  remove_outlier_count: 5
+  remove_outlier_thresh: 1.5
+  remove_outliers: true
+  resolution: 0.5
+  safe_init_radius: 8.0
+  slope_weight: 0.6
+  unknown_cost_offset: 0.0
+  unknown_enable_linear: false
+  unknown_max_distance: 3
+  unknown_weight: 0.2
+  unkown_max_dist: 3
+  use_veg_cost: false
+  vegetation_lethal_height_low: 0.7
+  vegetation_min_ndvi: 70.0
+  vegetation_weight: 0.15
+  vehicle_frame_id: vehicle
+  visualize_maps: false
+map_to_sensor_init:
+  gps_topic: /odometry/filtered_odom
+  super_odometry_topic: /integrated_to_init
+maxent_irl_node:
+  costmap_topic: /local_costmap
+  cvar_topic: /irl_cvar
+  device: cuda
+  gridmap_topic: /local_gridmap
+  model_fp: /home/yamaha/physics_atv_ws/src/perception/maxent_irl_maps/launch/../models/yamaha/2023-01-25_resnet_speedmaps.pt
+  obstacle_threshold: 0.0
+  odom_topic: /integrated_to_init
+  publish_gridmap: true
+  speedmap_lcb_topic: /speedmap_lcb
+  speedmap_topic: /local_speedmap
+mppi_node:
+  base_frame: sensor_init
+  config_fp: /home/yamaha/physics_atv_ws/src/control/torch_mpc/configs/test_config.yaml
+  costmap_topic: /local_costmap
+  gridmap_topic: /local_gridmap
+  mpc_itrs: 1
+  odom_topic: /integrated_to_init
+  use_gridmaps: true
+  waypoint_feature_topic: /next_waypoints/odom
+mppi_node_throttle:
+  base_frame: sensor_init
+  config_spec_path: /home/yamaha/physics_atv_ws/src/control/torch_mpc/launch/../../../../configs/yamaha_atv/atv_model_0.1.yaml
+  costmap_topic: /local_costmap
+  gridmap_topic: /local_gridmap
+  kbm_config: /home/yamaha/physics_atv_ws/src/control/torch_mpc/configs/kbm_50.yaml
+  kbm_model_name: gravity
+  model_fp: ''
+  mppi_H: 50
+  mppi_N: 1024
+  mppi_d_ou_scale: '[1.0, 6.0]'
+  mppi_device: cpu
+  mppi_iterations: 1
+  mppi_ou_alpha: '[0.0, 0.0]'
+  mppi_ou_scale: '[1.3, 0.5]'
+  mppi_sH: 0
+  mppi_steer_noise: 0.25
+  mppi_temperature: 0.02
+  mppi_throttle_delay: 0.5
+  mppi_throttle_noise: 0.5
+  mppi_uN: 1024
+  mppi_use_all_last_controls: false,false
+  mppi_use_normal_init_noise: true,true
+  mppi_use_ou: true
+  odom_topic: /integrated_to_init
+  pitch_thresh: 0.1
+  pitch_window: 10
+  rgb_list: 1,0,0
+  use_gridmaps: true
+  waypoint_feature_topic: /next_waypoints/odom
+odom_topic: /integrated_to_init
+odometry_frame_id: vehicle
+rosdistro: 'noetic
+
+  '
+roslaunch:
+  uris:
+    host_yamaha_laptop__34261: http://yamaha-laptop:34261/
+    host_yamaha_laptop__35847: http://yamaha-laptop:35847/
+    host_yamaha_laptop__36465: http://yamaha-laptop:36465/
+    host_yamaha_laptop__37937: http://yamaha-laptop:37937/
+    host_yamaha_laptop__39369: http://yamaha-laptop:39369/
+    host_yamaha_laptop__40449: http://yamaha-laptop:40449/
+    host_yamaha_laptop__42043: http://yamaha-laptop:42043/
+    host_yamaha_laptop__43599: http://yamaha-laptop:43599/
+    host_yamaha_laptop__43949: http://yamaha-laptop:43949/
+    host_yamaha_laptop__45143: http://yamaha-laptop:45143/
+rosversion: '1.15.13
+
+  '
+run_id: 9e0f498c-639c-11ee-aeb1-9992a3eb16a8
+waypoint_manager:
+  gps_topic: /odometry/filtered_odom
+  mission_dir: /home/yamaha/physics_atv_ws/src/platform/yamaha_gps_utils/missions/
+  offset_x: 0.0
+  offset_y: 0.0
+  offset_z: 0.0
+  site_graph: /home/yamaha/physics_atv_ws/src/platform/yamaha_gps_utils/site_graphs/gascola.pt
+  start_idx: 0

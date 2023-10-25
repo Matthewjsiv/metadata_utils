@@ -1,30 +1,26 @@
 ---
-data_folder: '/home/yamaha/rosbags'
-experiment_name: 'parv_experiments'
+data_folder: /home/yamaha/rosbags
+experiment_name: parv_experiments
 pre:
   driver: Matthew
   robot: yamaha_viking
   launch:
     rviz:
       args:
-    # sensors_all:
-    #   args:
-    # joystick_drive:
-    #   args:
-    remove_superodom:
-      args:
-    superodom_lidar:
+    super_odometry:
       args:
     lidar_mapping:
       args:
     lethal_height_costmapping:
       args:
+#    cvar_maxent_irl:
+#      args:
+#        obstacle_threshold: 0.0
     mppi_throttle:
       args:
         node: 'mppi_throttle_tartan_50_all'
     waypoint_manager:
-      args: 
-        mission_file: "../missions/turnpike_figure8_vel7_3/forward.yaml"
+        args:
     real_time_vel:
       args:
     

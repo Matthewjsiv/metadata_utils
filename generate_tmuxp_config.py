@@ -58,6 +58,9 @@ def generate_tmuxp_config(config, metadata, now=None, descriptor=None):
     """
     out_config = copy.deepcopy(base_tmuxp)
 
+    if descriptor:
+        out_config['session_name'] = descriptor
+
     launches = metadata['pre']['launch']
 
     for launch_k, launch_v in launches.items():
@@ -89,7 +92,7 @@ def generate_tmuxp_config(config, metadata, now=None, descriptor=None):
         #     out["shell_command"].append(cmd)
         #     shell_cmd = out
 
-        if k == 'record':
+        if k == 'record' or k == 'parv_record':
             out = {
                     "shell_command":[
                         "cd ~/physics_atv_ws",

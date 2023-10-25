@@ -32,30 +32,38 @@ def main(args):
         descriptor = now
     else:
         descriptor = args.descriptor
-        now = descriptor + '_' + now
+        now = now + '_' + descriptor
 
-    Path(md['data_folder'] + '/' + md['experiment_name'] + '/' + now).mkdir(parents=True, exist_ok=True)
+    if 'no_folder' not in md.keys():
 
-    bn = os.path.join(md['data_folder'], md['experiment_name'], now)
 
-    #TODO: add new keywords to dict in config
-    #print("NEW KEYWORDS ADDED: []")
+        Path(md['data_folder'] + '/' + md['experiment_name'] + '/' + now).mkdir(parents=True, exist_ok=True)
 
-    # fout = os.path.join(bn, os.path.basename(fname))
-    fout = os.path.join(bn, "info.yaml")
-    with open(fout, "w") as f:
-        yaml.dump(md, f)
+        bn = os.path.join(md['data_folder'], md['experiment_name'], now)
 
-    fout = os.path.join(bn, 'config.yaml')
-    with open(fout, "w") as f:
-        yaml.dump(CONFIG, f)
+        #TODO: add new keywords to dict in config
+        #print("NEW KEYWORDS ADDED: []")
 
-    # import shutil
-    # shutil.copy('temp.bag', bn)
+        # fout = os.path.join(bn, os.path.basename(fname))
+        fout = os.path.join(bn, "info.yaml")
+        with open(fout, "w") as f:
+            yaml.dump(md, f)
 
-    print('created experiment dir in {} ...'.format(bn))
+        fout = os.path.join(bn, 'config.yaml')
+        with open(fout, "w") as f:
+            yaml.dump(CONFIG, f)
+
+        # import shutil
+        # shutil.copy('temp.bag', bn)
+
+        print('created experiment dir in {} ...'.format(bn))
+    else:
+        bn = './platform_launch'
+        os.makedirs(bn,exist_ok=True)
 
     tmuxp_config = generate_tmuxp_config(CONFIG, md,now=now,descriptor=descriptor)
+
+    
     fout = os.path.join(bn, 'tmuxp_config.yaml')
     with open(fout, "w") as f:
         yaml.dump(tmuxp_config, f)

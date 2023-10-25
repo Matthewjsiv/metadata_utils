@@ -1,33 +1,22 @@
 ---
-data_folder: '/home/matthew/metadata_utils/rosbags'
-experiment_name: 'matthew_experiments'
+data_folder: /home/yamaha/rosbags
+experiment_name: tartandrive
 pre:
-  driver: Matthew
-  robot: yamaha_viking
-  launch:
-    rviz:
-      args:
-    super_odometry:
-      args:
-    lidar_mapping:
-      args:
-    lethal_height_costmapping:
-      args:
-        lethal_height: 0.3
-    mppi:
-      args:
-    sensors_all:
-      args:
-  other:
-    record:
-    live_notes:
-
-  context:
-  #keywords - collect, test, learning_physics, sara
-    - 'collect'
-    - 'learning_physics'
   conditions:
-  #keywords - sunny, snow, muddy
-    - 'sunny'
+  - afternoon
+  - sunny
+  - damp
+  context:
+  - collect
   course:
-    - 'green'
+  - gupta
+  driver: Sam
+  launch:
+    joystick_drive:
+      args: null
+  number_people: 2
+  other:
+    live_notes: null
+    record: null
+    topics_monitor: null
+  robot: yamaha_viking

@@ -1,5 +1,5 @@
 ---
-data_folder: '/home/matthew/metadata_utils/rosbags'
+data_folder: '/home/yamaha/rosbags'
 experiment_name: 'launch_test'
 pre:
   driver: Matthew
@@ -7,18 +7,19 @@ pre:
   launch:
     rviz:
       args:
-    super_odometry:
-      args:
-    lidar_mapping:
-      args:
-    lethal_height_costmapping:
-      args:
-        lethal_height: 0.3
-    mppi:
-      args:
+    # super_odometry:
+    #   args:
+    # lidar_mapping:
+    #   args:
+    # lethal_height_costmapping:
+    #   args:
+    #     lethal_height: 0.3
+    # mppi:
+    #   args:
   other:
-    record:
+    # record:
     live_notes:
+    topics_monitor:
 
   context:
   #keywords - collect, test, learning_physics, sara
