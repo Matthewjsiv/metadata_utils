@@ -24,7 +24,6 @@ pre:
       args:
 
   other:
-    record:
     live_notes:
 
   context:
