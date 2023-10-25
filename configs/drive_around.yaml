@@ -14,10 +14,10 @@ pre:
     cvar_maxent_irl:
       args:
 
-    waypoint_manager:
-        args: 
+    waypoint_graph_planner:
+        args:
 
-    mppi_throttle:
+    mppi:
       args:
 
     rviz:
