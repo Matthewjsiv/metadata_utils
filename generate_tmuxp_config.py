@@ -20,7 +20,7 @@ base_tmuxp = {
     ]
 }
 
-def make_shell_command(base_cmd, args={}, delay=0., on_atv=False, to_data_dir=False):
+def make_shell_command(base_cmd, args={}, delay=0., on_atv=False, respawn=False):
     """
     make a tmuxp shell command from a base command, args and a delay
     Args:
@@ -46,6 +46,9 @@ def make_shell_command(base_cmd, args={}, delay=0., on_atv=False, to_data_dir=Fa
 
     out["shell_command"].append("sleep {}".format(delay))
     cmd = base_cmd
+    if respawn:
+        cmd = "repeat " + base_cmd
+
     if args is not None:
         for k,v in args.items():
             cmd += " {}:={}".format(k,v)
@@ -70,7 +73,8 @@ def generate_tmuxp_config(config, metadata, now=None, descriptor=None):
             base_cmd=config['launch'][launch_k]['launch_cmd'],
             args=launch_v['args'],
             delay=config['launch'][launch_k]['launch_delay'],
-            on_atv='on_atv' in config['launch'][launch_k]
+            on_atv='on_atv' in config['launch'][launch_k],
+            respawn='respawn' in config['launch'][launch_k]
         )
 
         out_config['windows'][0]['panes'].append(shell_cmd)

@@ -4,16 +4,13 @@ launch:
     type: slam
     launch_cmd: "roslaunch super_odometry yamaha.launch"
     launch_delay: 1.0
-
-  super_odometry_respawn:
-    type: slam
-    launch_cmd: "repeat roslaunch super_odometry yamaha.launch"
-    launch_delay: 1.0
+    respawn: true
 
   lidar_mapping:
     type: perception
     launch_cmd: "roslaunch physics_atv_lidar_mapping local_mapping_lidar.launch"
     launch_delay: 7.0
+    respawn: true
 
   lethal_height_costmapping:
     type: perception
@@ -42,7 +39,6 @@ launch:
 
   mppi_throttle:
     type: controls
-#    launch_cmd: "roslaunch torch_mpc mppi_throttle_50.launch"
     launch_cmd: "roslaunch torch_mpc mppi_throttle.launch"
     launch_delay: 10.0
 
