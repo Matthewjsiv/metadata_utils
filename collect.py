@@ -35,8 +35,6 @@ def main(args):
         now = now + '_' + descriptor
 
     if 'no_folder' not in md.keys():
-
-
         Path(md['data_folder'] + '/' + md['experiment_name'] + '/' + now).mkdir(parents=True, exist_ok=True)
 
         bn = os.path.join(md['data_folder'], md['experiment_name'], now)
@@ -63,7 +61,6 @@ def main(args):
 
     tmuxp_config = generate_tmuxp_config(CONFIG, md,now=now,descriptor=descriptor)
 
-    
     fout = os.path.join(bn, 'tmuxp_config.yaml')
     with open(fout, "w") as f:
         yaml.dump(tmuxp_config, f)

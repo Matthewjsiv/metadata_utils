@@ -20,7 +20,7 @@ base_tmuxp = {
     ]
 }
 
-def make_shell_command(base_cmd, args={}, delay=0., on_atv = False):
+def make_shell_command(base_cmd, args={}, delay=0., on_atv=False, to_data_dir=False):
     """
     make a tmuxp shell command from a base command, args and a delay
     Args:
@@ -93,14 +93,15 @@ def generate_tmuxp_config(config, metadata, now=None, descriptor=None):
         #     shell_cmd = out
 
         if k == 'record' or k == 'parv_record':
+            data_fp = os.path.join(metadata['data_folder'], metadata['experiment_name'], now)
             out = {
                     "shell_command":[
-                        "cd ~/physics_atv_ws",
+                        "cd {}".format(data_fp),
                         "source ~/physics_atv_ws/devel/setup.bash",
                     ]
                 }
             out["shell_command"].append("sleep {}".format(config['other'][k]['launch_delay']))
-            cmd = config['other'][k]['launch_cmd'] + " -O " + os.path.join(metadata['data_folder'], metadata['experiment_name'],now,descriptor) + ".bag"
+            cmd = config['other'][k]['launch_cmd'] + " -O " + os.path.join(data_fp, descriptor) + ".bag"
             out["shell_command"].append(cmd)
             shell_cmd = out
             out_config['windows'][0]['panes'].append(shell_cmd)

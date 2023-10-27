@@ -99,11 +99,6 @@ launch:
     launch_cmd: "roslaunch yamaha_gps_utils generate_mission.launch"
     launch_delay: 4.0
 
-  real_time_vel:
-    type: platform
-    launch_cmd: "python3 ~/physics_atv_ws/src/control/torch_mpc/src/torch_mpc/scripts/ros/real_time_vel.py"
-    launch_delay: 7.0
-
   multisense:
     type: platform
     launch_cmd: "roslaunch multisense_bringup multisense.launch"
@@ -123,6 +118,7 @@ other:
   live_notes:
     type: data_collect
     launch_cmd: "python3 live_notes.py"
+
   topics_monitor:
     type: platform
     launch_cmd: "python3 topics_monitor.py"
