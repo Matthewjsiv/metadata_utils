@@ -16,10 +16,10 @@ pre:
 
   context:
   #keywords - collect, test, learning_physics, sara
-    - 'collect'
-    - 'learning_physics'
+    - 'testing'
+    - 'SARA'
   conditions:
   #keywords - sunny, snow, muddy
     - 'sunny'
   course:
-    - 'green'
+    - turnpike

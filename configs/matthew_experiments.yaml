@@ -4,19 +4,18 @@ experiment_name: tartandrive
 pre:
   conditions:
   - afternoon
-  - sunny
-  - damp
+  - cloudy
   context:
   - collect
   course:
+  - turnpike
+  - figure_8
   - gupta
+  - rough_rider
   driver: Sam
-  launch:
-    joystick_drive:
-      args: null
+  launch: {}
   number_people: 2
   other:
     live_notes: null
     record: null
-    topics_monitor: null
   robot: yamaha_viking

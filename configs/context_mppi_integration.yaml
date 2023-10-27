@@ -19,21 +19,26 @@ pre:
 
     mppi_throttle:
       args:
-#        config_fp: 'configs/test_speedmap_config.yaml'
 
     rviz:
       args:
 
+    speed_adaptation:
+      args:
+    roughness_cost:
+      args:
+
   other:
-#    record:
+    record:
     live_notes:
 
   context:
   #keywords - collect, test, learning_physics, sara
-    - 'collect'
+    - 'testing'
     - 'learning_physics'
+    - 'SARA'
   conditions:
   #keywords - sunny, snow, muddy
     - 'sunny'
   course:
-    - 'green'
+    - 'turnpike'

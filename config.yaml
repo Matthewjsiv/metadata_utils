@@ -5,6 +5,11 @@ launch:
     launch_cmd: "roslaunch super_odometry yamaha.launch"
     launch_delay: 1.0
 
+  super_odometry_respawn:
+    type: slam
+    launch_cmd: "repeat roslaunch super_odometry yamaha.launch"
+    launch_delay: 1.0
+
   lidar_mapping:
     type: perception
     launch_cmd: "roslaunch physics_atv_lidar_mapping local_mapping_lidar.launch"
@@ -98,6 +103,7 @@ launch:
     type: platform
     launch_cmd: "python3 ~/physics_atv_ws/src/control/torch_mpc/src/torch_mpc/scripts/ros/real_time_vel.py"
     launch_delay: 7.0
+
   multisense:
     type: platform
     launch_cmd: "roslaunch multisense_bringup multisense.launch"
