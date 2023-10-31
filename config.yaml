@@ -6,6 +6,11 @@ launch:
     launch_delay: 1.0
     respawn: true
 
+  tartanvo:
+    type: slam
+    launch_cmd: "roslaunch physics_atv_deep_stereo_vo multisense_register_localmapping.launch"
+    launch_delay: 1.0
+
   lidar_mapping:
     type: perception
     launch_cmd: "roslaunch physics_atv_lidar_mapping local_mapping_lidar.launch"
@@ -20,6 +25,11 @@ launch:
   cvar_maxent_irl:
     type: perception
     launch_cmd: "roslaunch maxent_irl_maps cvar_maxent_irl_yamaha.launch"
+    launch_delay: 7.0
+
+  hdif:
+    type: perception
+    launch_cmd: "rosrun physics_atv_hdif hdif_fullmap_node.py"
     launch_delay: 7.0
 
   speed_adaptation:
@@ -40,6 +50,11 @@ launch:
   mppi_throttle:
     type: controls
     launch_cmd: "roslaunch torch_mpc mppi_throttle.launch"
+    launch_delay: 10.0
+
+  mppi_shortrange:
+    type: controls
+    launch_cmd: "roslaunch torch_mpc mppi_shortrange.launch"
     launch_delay: 10.0
 
   remove_superodom:

@@ -1,0 +1,24 @@
+---
+data_folder: '/home/atv/rosbags'
+experiment_name: 'integration_test'
+pre:
+  driver: Matthew
+  robot: yamaha_viking
+  launch:
+    tartanvo:
+        args:
+
+    hdif:
+      args:
+
+  other: {}
+
+  context:
+  #keywords - collect, test, learning_physics, sara
+    - 'collect'
+    - 'learning_physics'
+  conditions:
+  #keywords - sunny, snow, muddy
+    - 'sunny'
+  course:
+    - 'green'
