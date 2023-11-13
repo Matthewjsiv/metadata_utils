@@ -5,6 +5,10 @@ pre:
   driver: Matthew
   robot: yamaha_viking
   launch:
+    super_odometry:
+        args:
+    lidar_mapping:
+      args:
     speed_adaptation:
       args:
     roughness_cost:
