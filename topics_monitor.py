@@ -165,7 +165,8 @@ class ROSSubscriber(QtWidgets.QWidget):
         self.camera_rates[topic] += 1
 
         secs = msg.header.stamp.to_sec()
-        if np.abs(secs - rospy.Time.now().to_sec()) > 2:
+        # print(self.bad_ts_list)
+        if np.abs(secs - rospy.Time.now().to_sec()) > 1:
             # print(secs, rospy.Time.now().to_sec())
             if topic not in self.bad_ts_list:
                 self.bad_ts_list.append(topic)
@@ -177,7 +178,7 @@ class ROSSubscriber(QtWidgets.QWidget):
 
 
         secs = msg.header.stamp.to_sec()
-        if np.abs(secs - rospy.Time.now().to_sec()) > 2:
+        if np.abs(secs - rospy.Time.now().to_sec()) > 1:
             # print(secs, rospy.Time.now().to_sec())
             if topic not in self.bad_ts_list:
                 self.bad_ts_list.append(topic)
@@ -188,20 +189,23 @@ class ROSSubscriber(QtWidgets.QWidget):
         # self.lidar_rates[topic] += 1
         # print(topic)
         # print(msg.header.stamp)
-        secs = msg.header.stamp.to_sec()
-        buff = self.other_msg_stats[topic]
-        buff[1:] = buff[:-1]
-        buff[0] = secs
-        dt = 1.0/((buff[:-1]-buff[1:]).mean())
-        # print(dt, topic)
-        if dt < self.other_list[topic]:
-            if topic not in self.bad_list:
-                self.bad_list.append(topic)
+        try:
+            secs = msg.header.stamp.to_sec()
+            buff = self.other_msg_stats[topic]
+            buff[1:] = buff[:-1]
+            buff[0] = secs
+            dt = 1.0/((buff[:-1]-buff[1:]).mean())
+            # print(dt, topic)
+            if dt < self.other_list[topic]:
+                if topic not in self.bad_list:
+                    self.bad_list.append(topic)
 
-        if np.abs(secs - rospy.Time.now().to_sec()) > 2:
-            # print(secs, rospy.Time.now().to_sec())
-            if topic not in self.bad_ts_list:
-                self.bad_ts_list.append(topic)
+            if np.abs(secs - rospy.Time.now().to_sec()) > 1:
+                # print(secs, rospy.Time.now().to_sec())
+                if topic not in self.bad_ts_list:
+                    self.bad_ts_list.append(topic)
+        except: 
+            ...
 
 
     @QtCore.Slot(Odometry)
@@ -213,7 +217,7 @@ class ROSSubscriber(QtWidgets.QWidget):
 
 
         secs = msg.header.stamp.to_sec()
-        if np.abs(secs - rospy.Time.now().to_sec()) > 2:
+        if np.abs(secs - rospy.Time.now().to_sec()) > 1:
             # print(secs, rospy.Time.now().to_sec())
             if '/odometry/filtered_odom' not in self.bad_ts_list:
                 self.bad_ts_list.append('/odometry/filtered_odom')
@@ -295,11 +299,12 @@ class ROSSubscriber(QtWidgets.QWidget):
             self.misc_boxes['rates'].setFixedSize(self.misc_boxes['rates'].sizeHint())
 
         if len(self.bad_ts_list) == 0:
-            self.misc_boxes['rates'].label.setText('Good')
-            self.misc_boxes['rates'].setStyleSheet("background-color: green;")
-            self.misc_boxes['rates'].setFixedSize(self.misc_boxes['rates'].sizeHint())
+            self.misc_boxes['ts'].label.setText('Good')
+            self.misc_boxes['ts'].setStyleSheet("background-color: green;")
+            self.misc_boxes['ts'].setFixedSize(self.misc_boxes['rates'].sizeHint())
         else:
-            badstr = ''
+            # print(self.bad_ts_list)
+            badstr = 'Timestamps:'
             for bad in self.bad_ts_list:
                 badstr += bad + '\n'
             self.bad_ts_list = []

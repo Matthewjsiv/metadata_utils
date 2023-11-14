@@ -3,4 +3,4 @@
 /ros_talon/steering_angle : 25
 /wheel_rpm : 18
 /shock_pos : 18
-/controls : 180
+/controls : 48
