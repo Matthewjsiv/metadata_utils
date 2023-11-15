@@ -25,5 +25,7 @@ To run your experiment, run:
 `python3 collect.py --name configs/template.yaml --descriptor test_1`
 where template.yaml will be replaced by your yaml. Descriptor is optional, if you don't use it, your run information will be saved in a folder named by time, placed in data_folder/experiment_name. If you do use it, it will just add it as a prefix to the time and then save it.
 
+**TODO** Add tmux info about how to add tmux config file for macros
+
 ### After Field Test
 After your finish all the runs for an experiment, you can run `python3 post.py --folder /path/to/experiment_name` and it will run some post-processing scripts that will add to the yaml files for all your runs information such as bag duration and what sensors were present.
