@@ -1,25 +1,18 @@
 ---
 data_folder: '/home/physics_atv/rosbags'
-experiment_name: 'integration_test'
+experiment_name: 'irl_postprocess'
 pre:
   driver: Matthew
   robot: yamaha_viking
   launch:
     super_odometry:
-        args:
+      args:
 
     lidar_mapping:
       args:
 
-    cvar_maxent_irl:
+    pointcloud_colorization:
       args:
-
-    waypoint_manager:
-        args: 
-
-    mppi_throttle:
-      args:
-#        config_fp: 'configs/test_speedmap_config.yaml'
 
     rviz:
       args:

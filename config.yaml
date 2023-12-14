@@ -17,6 +17,11 @@ launch:
     launch_delay: 7.0
     respawn: true
 
+  pointcloud_colorization:
+    type: perception
+    launch_cmd: "roslaunch pointcloud_colorization colorize_pcl.launch"
+    launch_delay: 1.0
+
   lethal_height_costmapping:
     type: perception
     launch_cmd: "roslaunch physics_atv_lidar_mapping lethal_height_costmap_yamaha.launch"
