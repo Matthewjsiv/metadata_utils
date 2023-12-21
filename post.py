@@ -43,6 +43,10 @@ def main(args):
         fname = prefix + '/' + dir + '/'
         fdirs = os.listdir(fname)
         bn = glob.glob(fname + "*.bag")
+        print(fname)
+        # if os.path.exists(fname + 'gps.npy'):
+        #     print('skipping')
+        #     continue
         # print(bn)
 
         baglist = []
@@ -58,9 +62,10 @@ def main(args):
             info_dict = yaml.safe_load(subprocess.Popen(['rosbag', 'info', '--yaml', b], stdout=subprocess.PIPE).communicate()[0])
             total_duration += info_dict['duration']
         md['duration'] = total_duration
+        md['date'] = dir.split('_')[-1]
         # print(info_dict)
     #
-        # parsing.sensors(md, baglist)
+        parsing.sensors_algz(md, baglist)
         # parsing.interventions(md, baglist)
         gps = parsing.top_speed(md, baglist)
 
@@ -68,6 +73,57 @@ def main(args):
 
         with open(fname + 'info.yaml', "w") as f:
             yaml.dump(md, f)
+
+# def main(args):
+#
+#     prefix = args.folder
+#     exp_dirs = os.listdir(prefix)
+#     print(prefix)
+#     print(exp_dirs)
+#
+#     duration = 0
+#     # print(exp_dirs)
+#     for dir in tqdm(exp_dirs):
+#         fname = prefix + '/' + dir + '/'
+#         fdirs = os.listdir(fname)
+#         print(fdirs)
+#         # bn = glob.glob(fname + "*.bag")
+#         # print(fname)
+#
+#         for dir in fdirs:
+#             if 'active' in dir:
+#                 print(dir)
+#
+#
+#
+#     #     if os.path.exists(fname + 'gps.npy'):
+#     #         print('skipping')
+#     #         continue
+#     #     # print(bn)
+#     #
+#         # baglist = []
+#         # for b in bn:
+#         #     bag = rosbag.Bag(b)
+#         #     baglist.append(bag)
+#         #
+#         #
+#         # total_duration = 0
+#         # for b in bn:
+#         #     info_dict = yaml.safe_load(subprocess.Popen(['rosbag', 'info', '--yaml', b], stdout=subprocess.PIPE).communicate()[0])
+#         #     # total_duration += info_dict['duration']
+#         # # md['duration'] = total_duration
+#         # duration += total_duration
+#         # print(duration)
+#         # print(info_dict)
+#     # #
+#     #     # parsing.sensors(md, baglist)
+#     #     # parsing.interventions(md, baglist)
+#     #     gps = parsing.top_speed(md, baglist)
+#     #
+#     #     np.save(fname + 'gps',gps)
+#     #
+#     #     with open(fname + 'info.yaml', "w") as f:
+#     #         yaml.dump(md, f)
 
 if __name__ == "__main__":
     # main()

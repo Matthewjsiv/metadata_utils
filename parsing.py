@@ -7,9 +7,10 @@ import numpy as np
 with open('config.yaml') as f:
         CONFIG = yaml.safe_load(f)
 
-def sensors(md, baglist):
+def sensors_algz(md, baglist):
     #TODO: validate somehow by # of messages
     sensors = []
+    algz = []
     for bag in baglist:
         topics = bag.get_type_and_topic_info()[1].keys()
 
@@ -22,7 +23,17 @@ def sensors(md, baglist):
                     break
             if valid:
                 sensors.append(sensor)
-    md['sensors'] = sensors
+        for alg in CONFIG['algz']:
+            req_topics = CONFIG['algz'][alg]
+            valid = True
+            for topic in req_topics:
+                if topic not in topics:
+                    valid = False
+                    break
+            if valid:
+                algz.append(alg)
+    md['sensors'] = list(set(sensors))
+    md['algz'] = list(set(algz))
 
 def interventions(md, baglist):
     intervening = True

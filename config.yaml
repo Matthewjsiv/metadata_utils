@@ -155,6 +155,17 @@ sensors:
   racepak:
     - '/shock_pos'
     - '/wheel_rpm'
+algz:
+  lidar_mapping:
+    - '/local_gridmap'
+  super_odometry:
+    - '/integrated_to_init'
+  lidar_stitching:
+    - '/full_cloud'
+  roughness_cost:
+    - '/traversability_cost'
+  tartanvo:
+    - '/tartanvo_odom'
 intervention: '/mux/intervention'
 top_speed: '/odometry/filtered_odom'
 keywords:
