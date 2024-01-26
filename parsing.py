@@ -35,6 +35,29 @@ def sensors_algz(md, baglist):
     md['sensors'] = list(set(sensors))
     md['algz'] = list(set(algz))
 
+def update_metadata_config(md):
+    #TODO: validate somehow by # of messages
+
+    conditions = md['pre']['conditions']
+    context = md['pre']['context']
+    driver = md['pre']['driver']
+    course = md['pre']['course']
+
+    CONFIG['keywords']['conditions'] += conditions
+    CONFIG['keywords']['conditions'] = list(set(CONFIG['keywords']['conditions']))
+
+    CONFIG['keywords']['context'] += context
+    CONFIG['keywords']['context'] = list(set(CONFIG['keywords']['context']))
+
+    CONFIG['keywords']['driver'] += [driver]
+    CONFIG['keywords']['driver'] = list(set(CONFIG['keywords']['driver']))
+
+    CONFIG['keywords']['course'] += course
+    CONFIG['keywords']['course'] = list(set(CONFIG['keywords']['course']))
+
+    with open('config.yaml', "w") as f:
+        yaml.dump(CONFIG, f)
+
 def interventions(md, baglist):
     intervening = True
     num_interventions = 0
