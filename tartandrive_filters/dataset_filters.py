@@ -53,10 +53,14 @@ def get_gps_vel(dirname, odom_source):
     ####
     #for simple
     if odom_source is None:
-        gps = np.load(dirname + '/gps.npy')
+        try:
+            gps = np.load(dirname + '/gps.npy')
+        except:
+            print('No gps data for ' + dirname)
+            return None, None, True
         if len(gps) == 0:
             break_signal = True
-            return gps, vel, break_signal
+            return gps, None, break_signal
         vel = np.linalg.norm(gps[:,3:],axis=1)
     ####
     return gps, vel, break_signal
@@ -264,6 +268,56 @@ def tartandrive_metadata_filter(prefix,keys,subfolders,odom_source,clean_gps=Fal
                 # print(out[name]['coords'].shape)
     return out
 
+def bag_metadata_filter(prefix,keys,subfolders,odom_source=None,clean_gps=False):
+    dirs = listdir(prefix)
+    flatlist = []
+    flonglist = []
+    alllat = []
+    alllong = []
+
+    out = {}
+
+    for name in subfolders:
+
+        out[name] = {'coords':np.empty((0,2))}
+
+        for dir in tqdm(dirs):
+            dirname = join(prefix, dir)
+
+            with open(dirname + '/info.yaml', 'r') as file:
+                metadata = yaml.safe_load(file)
+
+            for key in keys:
+                metadata = metadata[key]
+
+            if name not in metadata:
+                continue
+
+            gps, vel, break_signal = get_gps_vel(dirname, odom_source)
+            if break_signal:
+                continue
+
+            tlon,tlat =  MYPROJ(-gps[:,1], gps[:,0],inverse=True)
+
+            if clean_gps:
+                ids = np.where((tlat != 0.0))[0]
+            else:
+                ids = np.arange(tlat.shape[0])
+
+            if len(ids) > 0:
+                #if last value is included, need to remove since tartanvo_motion doesn't have
+                if ids[-1] == len(tlon)-1:
+                    ids = ids[:-1]
+
+                insidelon = tlon[ids]
+                insidelat = tlat[ids]
+
+                coords = np.array([insidelon,insidelat]).T
+                out[name]['coords'] = np.vstack([out[name]['coords'], coords])
+                out[name][dirname] = ids.tolist()
+                # print(out[name]['coords'].shape)
+    return out
+
 def tartandrive_speed_filter(prefix,bins,odom_source,clean_gps=False):
     dirs = listdir(prefix)
     flatlist = []
@@ -346,7 +400,7 @@ def tartandrive_bbox_filter(prefix,boxlist,odom_source,strict=False,savedir=None
             gps, vel, break_signal = get_gps_vel(dirname, odom_source)
             if break_signal:
                 continue
-                
+
             tlon,tlat =  MYPROJ(-gps[:,1], gps[:,0],inverse=True)
 
             ids = np.where((tlat > minx) & (tlat < maxx) & (tlon > miny) & (tlon < maxy) & (tlat != 0.0))[0]
