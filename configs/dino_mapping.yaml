@@ -1,0 +1,37 @@
+---
+data_folder: '/home/physics_atv/rosbags'
+experiment_name: 'integration_test'
+pre:
+  driver: Matthew
+  robot: yamaha_viking
+  launch:
+    super_odometry:
+        args:
+
+    lidar_mapping:
+      args:
+
+    pointcloud_colorization:
+      args:
+
+    dino_mapping:
+      args: 
+
+    dino_irl:
+      args:
+
+    rviz:
+      args:
+
+  other:
+      live_notes: 
+
+  context:
+  #keywords - collect, test, learning_physics, sara
+    - 'collect'
+    - 'learning_physics'
+  conditions:
+  #keywords - sunny, snow, muddy
+    - 'sunny'
+  course:
+    - 'green'

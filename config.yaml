@@ -17,6 +17,12 @@ launch:
     launch_delay: 7.0
     respawn: true
 
+  dino_mapping:
+    type: perception
+    launch_cmd: "roslaunch physics_atv_visual_mapping dino_localmapping.launch"
+    launch_delay: 7.0
+    respawn: true
+
   pointcloud_colorization:
     type: perception
     launch_cmd: "roslaunch pointcloud_colorization colorize_pcl.launch"
@@ -30,6 +36,11 @@ launch:
   cvar_maxent_irl:
     type: perception
     launch_cmd: "roslaunch maxent_irl_maps cvar_maxent_irl_yamaha.launch"
+    launch_delay: 7.0
+
+  dino_irl:
+    type: perception
+    launch_cmd: "roslaunch maxent_irl_maps dino_irl.launch"
     launch_delay: 7.0
 
   hdif:
