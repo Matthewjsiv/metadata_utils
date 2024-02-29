@@ -189,6 +189,18 @@ metrics:
         topic: '/integrated_to_init'
         max_speed: 20. #anything over this value should be discarded
 
+algz:
+  lidar_mapping:
+    - '/local_gridmap'
+  super_odometry:
+    - '/integrated_to_init'
+  lidar_stitching:
+    - '/full_cloud'
+  roughness_cost:
+    - '/traversability_cost'
+  tartanvo:
+    - '/tartanvo_odom'
+
 keywords:
   context:
     - collect

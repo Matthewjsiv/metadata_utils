@@ -11,6 +11,7 @@ from matplotlib import cm
 with open('config.yaml') as f:
         CONFIG = yaml.safe_load(f)
 
+<<<<<<< HEAD
 def gps_poses(md, baglist, metrics):
     """
     Extract gps postiions and timestamps from bags
@@ -48,9 +49,10 @@ def gps_poses(md, baglist, metrics):
     metrics['gps_times'] = gps_ts
     metrics['total_distance'] = total_dist
 
-def sensors(md, baglist):
+def sensors_algz(md, baglist):
     #TODO: validate somehow by # of messages
     sensors = []
+    algz = []
     for bag in baglist:
         topics = bag.get_type_and_topic_info()[1].keys()
 
@@ -63,7 +65,40 @@ def sensors(md, baglist):
                     break
             if valid:
                 sensors.append(sensor)
-    md['sensors'] = sensors
+        for alg in CONFIG['algz']:
+            req_topics = CONFIG['algz'][alg]
+            valid = True
+            for topic in req_topics:
+                if topic not in topics:
+                    valid = False
+                    break
+            if valid:
+                algz.append(alg)
+    md['sensors'] = list(set(sensors))
+    md['algz'] = list(set(algz))
+
+def update_metadata_config(md):
+    #TODO: validate somehow by # of messages
+
+    conditions = md['pre']['conditions']
+    context = md['pre']['context']
+    driver = md['pre']['driver']
+    course = md['pre']['course']
+
+    CONFIG['keywords']['conditions'] += conditions
+    CONFIG['keywords']['conditions'] = list(set(CONFIG['keywords']['conditions']))
+
+    CONFIG['keywords']['context'] += context
+    CONFIG['keywords']['context'] = list(set(CONFIG['keywords']['context']))
+
+    CONFIG['keywords']['driver'] += [driver]
+    CONFIG['keywords']['driver'] = list(set(CONFIG['keywords']['driver']))
+
+    CONFIG['keywords']['course'] += course
+    CONFIG['keywords']['course'] = list(set(CONFIG['keywords']['course']))
+
+    with open('config.yaml', "w") as f:
+        yaml.dump(CONFIG, f)
 
 def interventions(md, baglist, metrics):
     """
