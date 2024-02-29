@@ -33,7 +33,7 @@ launch:
     launch_cmd: "roslaunch physics_atv_lidar_mapping lethal_height_costmap_yamaha.launch"
     launch_delay: 7.0
 
-  cvar_maxent_irl:
+  irl:
     type: perception
     launch_cmd: "roslaunch maxent_irl_maps cvar_maxent_irl_yamaha.launch"
     launch_delay: 7.0
@@ -43,9 +43,18 @@ launch:
     launch_cmd: "roslaunch maxent_irl_maps dino_irl.launch"
     launch_delay: 7.0
 
+  planner_valuemap:
+    launch_cmd: "roslaunch torch_state_lattice_planner valuemap.launch"
+    launch_delay: 8.0
+
   hdif:
     type: perception
     launch_cmd: "rosrun physics_atv_hdif hdif_fullmap_node.py"
+    launch_delay: 7.0
+
+  online_hdif:
+    type: perception
+    launch_cmd: "roslaunch context_adaptation online_hdif.launch"
     launch_delay: 7.0
 
   speed_adaptation:
@@ -128,6 +137,7 @@ launch:
 
   multisense:
     type: platform
+    on_atv: 1
     launch_cmd: "roslaunch multisense_bringup multisense.launch"
     launch_delay: 1.0
 
@@ -135,7 +145,7 @@ other:
   record:
     type: data_collect
     launch_cmd: "atvbag"
-    launch_delay: 15.0
+    launch_delay: 7.0
 
   parv_record:
     type: data_collect
@@ -166,8 +176,19 @@ sensors:
   racepak:
     - '/shock_pos'
     - '/wheel_rpm'
-intervention: '/mux/intervention'
-top_speed: '/odometry/filtered_odom'
+
+metrics:
+    gps:
+        topic: '/odometry/filtered_odom'
+
+    intervention:
+        topic: '/mux/intervention'
+        radius: 5. #dont double-count interventions within this distance of each other
+
+    speed:
+        topic: '/integrated_to_init'
+        max_speed: 20. #anything over this value should be discarded
+
 keywords:
   context:
     - collect

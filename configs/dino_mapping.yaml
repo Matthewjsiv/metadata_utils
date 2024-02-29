@@ -1,18 +1,18 @@
 ---
 data_folder: '/home/physics_atv/rosbags'
-experiment_name: 'integration_test'
+experiment_name: 'dino_mapping_integration_test'
 pre:
   driver: Matthew
   robot: yamaha_viking
   launch:
     super_odometry:
-        args:
+      args:
 
     lidar_mapping:
       args:
 
-    pointcloud_colorization:
-      args:
+              #    pointcloud_colorization:
+              #      args:
 
     dino_mapping:
       args: 
@@ -20,11 +20,12 @@ pre:
     dino_irl:
       args:
 
-    rviz:
-      args:
+              #    rviz:
+              #      args:
 
   other:
       live_notes: 
+#      record:
 
   context:
   #keywords - collect, test, learning_physics, sara
