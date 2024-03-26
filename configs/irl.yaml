@@ -1,6 +1,6 @@
 ---
 data_folder: '/home/physics_atv/rosbags'
-experiment_name: 'dino_mapping_integration_test'
+experiment_name: 'irl_geom_only'
 pre:
   driver: Matthew
   robot: yamaha_viking
@@ -11,21 +11,20 @@ pre:
     lidar_mapping:
       args:
 
-              #    pointcloud_colorization:
-              #      args:
-
-    dino_mapping:
-      args: 
+#    pointcloud_colorization:
+#      args:
 
     dino_irl:
       args:
+        model_fp: ../models/yamaha/visual_ablations/2024-03-22-19-40-56_visual_ablations_geometry/itr_3.pt
+        obstacle_threshold: 0.4
 
     rviz:
       args:
 
   other:
       live_notes: 
-      record:
+#      record:
 
   context:
   #keywords - collect, test, learning_physics, sara

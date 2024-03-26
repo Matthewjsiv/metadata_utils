@@ -1,6 +1,6 @@
 ---
 data_folder: '/home/physics_atv/rosbags'
-experiment_name: 'dino_irl_pca'
+experiment_name: 'ganav_irl'
 pre:
   driver: Matthew
   robot: yamaha_viking
@@ -16,12 +16,11 @@ pre:
 
     dino_mapping:
       args: 
-        visual_mapping_config: dino_vlad.yaml
+        visual_mapping_config: ganav.yaml
 
     dino_irl:
       args:
-        model_fp: ../models/yamaha/visual_ablations/2024-03-22-20-27-18_visual_ablations_vlad/itr_3.pt
-        obstacle_threshold: 0.4
+        model_fp: ../models/yamaha/visual_ablations/2024-03-22-20-12-24_visual_ablations_semantics/itr_3.pt
 
     rviz:
       args:
