@@ -14,11 +14,11 @@ pre:
     cvar_maxent_irl:
       args:
 
-    waypoint_manager:
-        args: 
+              #    waypoint_manager:
+              #        args: 
 
-    mppi_throttle:
-      args:
+              #    mppi_throttle:
+              #      args:
 #        config_fp: 'configs/test_speedmap_config.yaml'
 
     rviz:

@@ -1,5 +1,5 @@
 ---
-data_folder: /home/yamaha/rosbags
+data_folder: /home/physics_atv/rosbags
 experiment_name: tartandrive
 no_folder: 1
 pre:
@@ -18,8 +18,8 @@ pre:
       args: null
     sensors_all:
       args: null
-    multisense:
-      args: null
+      #    multisense:
+      #args: null
   other:
     topics_monitor: null
   number_people: 2

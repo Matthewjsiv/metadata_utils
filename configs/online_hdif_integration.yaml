@@ -1,30 +1,39 @@
 ---
 data_folder: '/home/physics_atv/rosbags'
-experiment_name: 'irl_postprocess'
+experiment_name: 'online_hdif'
 pre:
-  driver: Matthew
+  driver: Sam
   robot: yamaha_viking
   launch:
     super_odometry:
-      args:
+        args:
 
-    lidar_mapping:
-      args:
+    #pointcloud_colorization:
+    #    arg:
 
-    pointcloud_colorization:
+    dino_mapping:
+      args: 
+
+    online_hdif:
       args:
 
     rviz:
       args:
 
+    irl:
+      args:
+
+    lidar_mapping:
+      args:
+
   other:
-#    record:
-    live_notes:
+      live_notes: 
+      record:
 
   context:
   #keywords - collect, test, learning_physics, sara
-    - 'collect'
-    - 'learning_physics'
+    - 'SARA'
+    - 'Learning Physics'
   conditions:
   #keywords - sunny, snow, muddy
     - 'sunny'

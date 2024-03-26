@@ -1,6 +1,6 @@
 ---
 data_folder: '/home/physics_atv/rosbags'
-experiment_name: 'irl_postprocess'
+experiment_name: 'dino_irl_pca'
 pre:
   driver: Matthew
   robot: yamaha_viking
@@ -8,18 +8,26 @@ pre:
     super_odometry:
       args:
 
-    lidar_mapping:
+    lidar_mapping_dino:
       args:
 
-    pointcloud_colorization:
+#    pointcloud_colorization:
+#      args:
+
+    dino_mapping:
+      args: 
+        visual_mapping_config: dino_pca.yaml
+
+    dino_irl:
       args:
+        model_fp: ../models/yamaha/visual_ablations/2024-03-22-19-56-29_visual_ablations_dino_pca/itr_3.pt
 
     rviz:
       args:
 
   other:
-#    record:
-    live_notes:
+      live_notes: 
+#      record:
 
   context:
   #keywords - collect, test, learning_physics, sara

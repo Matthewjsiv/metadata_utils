@@ -1,18 +1,16 @@
 ---
-data_folder: /home/yamaha/rosbags
+data_folder: /home/physics_atv/rosbags
 experiment_name: tartandrive
 pre:
   conditions:
   - afternoon
-  - cloudy
+  - sunny
   context:
   - collect
   course:
+  - meadows
   - turnpike
-  - figure_8
-  - gupta
-  - rough_rider
-  driver: Sam
+  driver: Matthew
   launch: {}
   number_people: 2
   other:

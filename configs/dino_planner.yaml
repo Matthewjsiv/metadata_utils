@@ -1,6 +1,6 @@
 ---
 data_folder: '/home/physics_atv/rosbags'
-experiment_name: 'irl_postprocess'
+experiment_name: 'debug_planner'
 pre:
   driver: Matthew
   robot: yamaha_viking
@@ -11,15 +11,24 @@ pre:
     lidar_mapping:
       args:
 
-    pointcloud_colorization:
+              #    pointcloud_colorization:
+              #      args:
+
+    dino_mapping:
+      args: 
+
+    dino_irl:
+      args:
+
+    planner_valuemap:
       args:
 
     rviz:
       args:
 
   other:
-#    record:
-    live_notes:
+      live_notes: 
+      record:
 
   context:
   #keywords - collect, test, learning_physics, sara

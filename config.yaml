@@ -17,6 +17,12 @@ launch:
     launch_delay: 7.0
     respawn: true
 
+  lidar_mapping_dino:
+    type: perception
+    launch_cmd: "roslaunch physics_atv_lidar_mapping local_mapping_dino.launch"
+    launch_delay: 7.0
+    respawn: true
+
   dino_mapping:
     type: perception
     launch_cmd: "roslaunch physics_atv_visual_mapping dino_localmapping.launch"
