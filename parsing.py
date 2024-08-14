@@ -11,7 +11,6 @@ from matplotlib import cm
 with open('config.yaml') as f:
         CONFIG = yaml.safe_load(f)
 
-<<<<<<< HEAD
 def gps_poses(md, baglist, metrics):
     """
     Extract gps postiions and timestamps from bags
@@ -44,6 +43,12 @@ def gps_poses(md, baglist, metrics):
 
     ss = np.linalg.norm(gps_pos[1:, :3] - gps_pos[:-1, :3], axis=-1)
     total_dist = np.sum(ss[ss < 10.])
+
+    #filter out gps jumps (note that this assumes the x=0, whihc for our driver it does)
+    mask = np.abs(gps_pos[:, 0]) > 10.
+
+    gps_pos = gps_pos[mask]
+    gps_ts = gps_ts[mask]
 
     metrics['gps_poses'] = gps_pos
     metrics['gps_times'] = gps_ts
@@ -178,7 +183,10 @@ def make_metrics_fig(md, tiff_fp, metrics):
     row = np.array(row)
     col = np.array(col)
 
-    m1 = plt.scatter(col, row, c=metrics['auto_speed'], cmap='plasma', s=1., label='traj')
+    #row = row[::10]
+    #col = col[::10]
+    
+    m1 = plt.scatter(col, row, c=metrics['auto_speed'], cmap='plasma', vmin=0.0,vmax=8.0,s=.3, label='traj')
     plt.colorbar(m1)
 
     utmx = -metrics['gps_poses'][~metrics['auto_mask']][:, 1]
@@ -188,7 +196,7 @@ def make_metrics_fig(md, tiff_fp, metrics):
     row = np.array(row)
     col = np.array(col)
 
-    plt.scatter(col, row, c='r', marker='x', label='traj')
+    #plt.scatter(col, row, c='r', marker='x', label='traj')
 
     plt.title('{:.2f}km traveled ({} interventions, {:.2f}m/s avg, {:.2f}m/s max)'.format(
         metrics['auto_distance']/1000.,
