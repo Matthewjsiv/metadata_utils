@@ -1,81 +1,82 @@
-import rosbag
 import yaml
 import subprocess
 import datetime
 import numpy as np
+from tqdm import tqdm
+
 
 with open('config.yaml') as f:
         CONFIG = yaml.safe_load(f)
 
-def sensors_algz(md, baglist):
-    #TODO: validate somehow by # of messages
+
+def sensors_algz(md, connections):
     sensors = []
     algz = []
-    for bag in baglist:
-        topics = bag.get_type_and_topic_info()[1].keys()
+    topics = [c.topic for c in connections]
 
-        for sensor in CONFIG['sensors']:
-            req_topics = CONFIG['sensors'][sensor]
-            valid = True
-            for topic in req_topics:
-                if topic not in topics:
-                    valid = False
-                    break
-            if valid:
-                sensors.append(sensor)
-        for alg in CONFIG['algz']:
-            req_topics = CONFIG['algz'][alg]
-            valid = True
-            for topic in req_topics:
-                if topic not in topics:
-                    valid = False
-                    break
-            if valid:
-                algz.append(alg)
+    for sensor, req_topics in CONFIG['sensors'].items():
+        if all(topic in topics for topic in req_topics):
+            sensors.append(sensor)
+    for alg, req_topics in CONFIG['algz'].items():
+        if all(topic in topics for topic in req_topics):
+            algz.append(alg)
+
     md['sensors'] = list(set(sensors))
     md['algz'] = list(set(algz))
 
-def interventions(md, baglist):
-    intervening = True
-    num_interventions = 0
 
-    for bag in baglist:
-        for topic, msg, t in bag.read_messages(topics=[CONFIG['intervention']]):
-            if (not intervening) and msg.data:
-                num_interventions += 1
-            intervening = msg.data
-    md['interventions'] = num_interventions
+def top_speed(md, reader, connections):
+    topic = CONFIG['top_speed']
+    if topic not in [c.topic for c in connections]:
+        md['top_speed'] = 0
+        md['average_speed'] = 0
+        return np.empty((0, 6))
 
-def top_speed(md, baglist,savegps=True):
-    top_speed = 0
+    conn = [c for c in connections if c.topic == topic][0]
+    all_speed = []
+    timestamps = []
     speed_total = 0
     measurement_num = 0
-    if savegps:
-        gps = []
-    for bag in baglist:
-        for topic, msg, t in bag.read_messages(topics=[CONFIG['top_speed']]):
-            speed = np.linalg.norm([msg.twist.twist.linear.x,msg.twist.twist.linear.y, msg.twist.twist.linear.z])
+    gps = []
 
-            if savegps:
-                gps.append([msg.pose.pose.position.x,msg.pose.pose.position.y,msg.pose.pose.position.z,msg.twist.twist.linear.x,msg.twist.twist.linear.y, msg.twist.twist.linear.z])
-            # print(speed)
-            if speed > top_speed:
-                top_speed = speed
-            speed_total += speed
-            measurement_num += 1
+    for connection, timestamp, rawdata in tqdm(reader.messages(connections=[conn])):
+        msg = reader.deserialize(rawdata, connection.msgtype)
+        v = np.array([
+            msg.twist.twist.linear.x,
+            msg.twist.twist.linear.y,
+            msg.twist.twist.linear.z
+        ])
+        p = np.array([
+            msg.pose.pose.position.x,
+            msg.pose.pose.position.y,
+            msg.pose.pose.position.z
+        ])
 
+        speed = np.linalg.norm(v)
 
+        gps.append(np.concatenate([p, v]))
+        timestamps.append(timestamp * 1e-9)
 
+        all_speed.append(speed)
+        speed_total += speed
+        measurement_num += 1
 
-    if measurement_num >= 1:
-        average_speed = speed_total/measurement_num
-    else:
-        average_speed = 0
-        print("NO MEASUREMENTS")
-    # print(type(average_speed), type(top_speed))
-    md['top_speed'] = float(top_speed)
-    md['average_speed'] = float(average_speed)
+    all_speed = np.asarray(all_speed)
+    timestamps = np.asarray(timestamps)
 
-    if savegps:
-        gps = np.array(gps)
-        return gps
+    sort_idx = np.argsort(timestamps)
+    timestamps, all_speed = timestamps[sort_idx], all_speed[sort_idx]
+
+    dt = np.diff(timestamps)
+    still_mask = all_speed[:-1] < .2
+
+    total_still_time = dt[still_mask].sum()
+
+    top_speed = all_speed.max()
+    average_speed = all_speed.mean() if measurement_num else 0
+    md['motion'] = {}
+    md['motion']['max_vel'] = float(top_speed)
+    md['motion']['mean_vel'] = float(average_speed)
+    md['motion']['still_time'] = float(total_still_time)
+    return np.array(gps)
+
