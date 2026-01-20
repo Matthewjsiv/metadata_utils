@@ -30,8 +30,11 @@ algz:
     - '/traversability_cost'
   # tartanvo:
     # - '/tartanvo_odom'
-intervention: '/mux/intervention'
-top_speed: '/odometry/filtered_odom'
+
+intervention_topic: '/mux/intervention'
+# speed_topic: '/odometry/filtered_odom'
+gps_topic: '/odometry/filtered_odom'
+
 keywords:
   context:
     - collect

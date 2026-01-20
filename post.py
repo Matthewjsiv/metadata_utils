@@ -1,10 +1,8 @@
-import yaml, json
-import subprocess
+import yaml
 import datetime
 import parsing
 import argparse
 import os
-import glob
 import numpy as np
 from tqdm import tqdm
 from rosbags.highlevel import AnyReader
@@ -12,10 +10,12 @@ from pathlib import Path
 import rasterio
 import matplotlib.pyplot as plt
 
+from gps_plotting import *
+
 with open('config.yaml') as f:
         CONFIG = yaml.safe_load(f)
 
-DEFAULT_TIFF = '/home/tartandriver/tartandriver_ws/src/core/mission_manager/gps_maps/gascola.tif'
+DEFAULT_TIFF = os.path.join(os.environ['TARTANDRIVER_HOME'], 'src/core/mission_manager/gps_maps/gascola.tif')
 
 def get_ros2_bag_info(bag_path):
     """Read metadata.yaml from a ROS 2 bag directory and extract duration + start date."""
@@ -42,42 +42,93 @@ def get_ros2_bag_info(bag_path):
         "start_time_str": start_dt.strftime("%Y-%m-%d_%H-%M-%S"),
     }
 
-def gen_gps_summary(gps, dir, tif_path = None):
-    tif_path = DEFAULT_TIFF if tif_path is None else tif_path
+def bagdata_is_autonomous(bagdata):
+    """
+    Detect if bagdata is autonomous. Check for nonzero velocity and no intervention flag
+    """
+    imask = bagdata['intervention'] > 0.5
+    sdata = bagdata['speed']
 
-    tif = rasterio.open(tif_path)
-    rgb_map = tif.read([1,2,3])
-    rgb_map = np.transpose(rgb_map, [1,2,0])
+    if imask.all():
+        return False
+    
+    auto_speeds = sdata[~imask]
+    return auto_speeds.max() > 1.
 
-    rows, cols = tif.index(-gps[:,1], gps[:,0])
-    rows = np.array(rows)
-    cols = np.array(cols)
+def compute_default_metrics(bagdata):
+    """
+    Compute teleop metrics from run data. This includes:
+        1. still time
+        2. avg/top speed
+        3. traversed distance
+    """
+    poses = bagdata['gps']
+    imask = bagdata['intervention'] > 0.5
+    speeds = bagdata['speed']
+    times = bagdata['times']
 
-    plt.imshow(rgb_map)
-    plt.plot(cols, rows, '-r')
+    top_speed = speeds.max()
+    avg_speed = speeds.mean()
 
-    margin = 50
-    plt.xlim(cols.min() - margin, cols.max() + margin)
-    plt.ylim(rows.max() + margin, rows.min() - margin) 
+    ds = np.linalg.norm(poses[1:, :2] - poses[:-1, :2], axis=-1)
+    ds = np.concatenate([np.zeros(1), ds], axis=0)
 
-    # plt.show()
-    plt.savefig(os.path.join(dir, 'traj.png'), dpi=300, bbox_inches='tight')
-    plt.clf()
-    plt.close('all')
+    dist_traveled = ds.sum()
 
-    vels = np.linalg.norm(gps[:,3:6], axis=-1)
-    plt.hist(vels, bins=14, range=(0,15))
-    # plt.show()
-    plt.savefig(os.path.join(dir, 'vels.png'), dpi=300, bbox_inches='tight')
-    plt.clf()
-    plt.close('all')
+    dt = times[1:] - times[:-1]
+    still_mask = speeds[1:] < 0.2
+    still_time  = dt[still_mask].sum()
+
+    return {
+        'top_speed (m/s)' : top_speed.item(),
+        'avg_speed (m/s)' : avg_speed.item(),
+        'dist_traveled (km)': dist_traveled.item() / 1000.,
+        'still_time (s)': still_time.item(),
+    }
+
+def compute_auto_metrics(bagdata):
+    """
+    Compute autonomy metrics from run data. This includes:
+        1. num interventions
+        2. avg/top autonomous speed
+        3. traversed auto distance
+    """
+    poses = bagdata['gps']
+    imask = bagdata['intervention'] > 0.5
+    speeds = bagdata['speed']
+    times = bagdata['times']
+
+    #num interventions = num times of False->True
+    num_interventions = (imask[1:] & ~imask[:-1]).sum()
+
+    top_auto_speed = speeds[~imask].max()
+
+    avg_auto_speed = speeds[~imask].mean()
+
+    ds = np.linalg.norm(poses[1:, :2] - poses[:-1, :2], axis=-1)
+    ds = np.concatenate([np.zeros(1), ds], axis=0)
+
+    dist_auto_traveled = ds[~imask].sum()
+
+    dt = times[1:] - times[:-1]
+    dt = np.concatenate([np.zeros(1), dt], axis=0)
+    auto_time = dt[~imask].sum()
+
+    return {
+        'num_interventions': num_interventions.item(),
+        'top_auto_speed (m/s)' : top_auto_speed.item(),
+        'avg_auto_speed (m/s)' : avg_auto_speed.item(),
+        'dist_auto_traveled (km)': dist_auto_traveled.item() / 1000.,
+        'auto_time (s)': auto_time.item()
+    }
 
 def main(args):
-
     prefix = args.run_dir
     exp_dirs = os.listdir(prefix)
     print(prefix)
-    # print(exp_dirs)
+
+    tif_path = DEFAULT_TIFF if args.tif_fp is None else args.tif_fp
+    tif = rasterio.open(tif_path)
 
     # print(exp_dirs)
     for dir in tqdm(exp_dirs):
@@ -97,74 +148,32 @@ def main(args):
 
             parsing.sensors_algz(md, connections)
 
-            # parsing.interventions(md, reader, connections)
-            if 'top_speed' not in md:
-                gps = parsing.top_speed(md, reader, connections)
+            bag_data = parsing.get_bag_data(md, reader, connections)
 
-        np.save(os.path.join(fname, 'gps'),gps)
+        md['metrics'] = {}
+        md['metrics']['default'] = compute_default_metrics(bag_data)
+        is_auto = bagdata_is_autonomous(bag_data)
+        if is_auto:
+            print('auto-detected run has auto data. Computing metrics...')
+            md['metrics']['autonomy'] = compute_auto_metrics(bag_data)
+
+        np.savez(os.path.join(fname, 'run_data'), **bag_data)
 
         with open(os.path.join(fname, 'info.yaml'), "w") as f:
             yaml.dump(md, f)
 
-        gen_gps_summary(gps, fname)
-
-
-        
-
-# def main(args):
-#
-#     prefix = args.folder
-#     exp_dirs = os.listdir(prefix)
-#     print(prefix)
-#     print(exp_dirs)
-#
-#     duration = 0
-#     # print(exp_dirs)
-#     for dir in tqdm(exp_dirs):
-#         fname = prefix + '/' + dir + '/'
-#         fdirs = os.listdir(fname)
-#         print(fdirs)
-#         # bn = glob.glob(fname + "*.bag")
-#         # print(fname)
-#
-#         for dir in fdirs:
-#             if 'active' in dir:
-#                 print(dir)
-#
-#
-#
-#     #     if os.path.exists(fname + 'gps.npy'):
-#     #         print('skipping')
-#     #         continue
-#     #     # print(bn)
-#     #
-#         # baglist = []
-#         # for b in bn:
-#         #     bag = rosbag.Bag(b)
-#         #     baglist.append(bag)
-#         #
-#         #
-#         # total_duration = 0
-#         # for b in bn:
-#         #     info_dict = yaml.safe_load(subprocess.Popen(['rosbag', 'info', '--yaml', b], stdout=subprocess.PIPE).communicate()[0])
-#         #     # total_duration += info_dict['duration']
-#         # # md['duration'] = total_duration
-#         # duration += total_duration
-#         # print(duration)
-#         # print(info_dict)
-#     # #
-#     #     # parsing.sensors(md, baglist)
-#     #     # parsing.interventions(md, baglist)
-#     #     gps = parsing.top_speed(md, baglist)
-#     #
-#     #     np.save(fname + 'gps',gps)
-#     #
-#     #     with open(fname + 'info.yaml', "w") as f:
-#     #         yaml.dump(md, f)
+        ##make gps plots
+        for plt_fn in [
+            basic_gps_plot,
+            speed_gps_plot,
+            intervention_gps_plot,
+            speed_histogram
+        ]:
+            plt_fn(bag_data, fname, tif, legend=False)
 
 if __name__ == "__main__":
-    # main()
     parser = argparse.ArgumentParser()
     parser.add_argument('--run_dir', help='folder to run in')
+    parser.add_argument('--tif_fp', help='path to site TIF (leave empty for gascola)')
     args = parser.parse_args()
     main(args)
