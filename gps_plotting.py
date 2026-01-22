@@ -2,7 +2,7 @@ import os
 import numpy as np
 import matplotlib.pyplot as plt
 
-def basic_gps_plot(bagdata, dir, tif, legend=True):
+def basic_gps_plot(bagdata, dir, tif, legend=True, time_plot=True):
     """
     Args:
         bagdata: data to plot from
@@ -19,7 +19,16 @@ def basic_gps_plot(bagdata, dir, tif, legend=True):
     cols = pts[:, 1]
 
     plt.imshow(rgb_map)
-    plt.plot(cols, rows, '-r')
+    
+    if time_plot:
+        z = bagdata['times']
+        z = (z - z[0]) / (z[-1] - z[0])
+        aaa = plt.scatter(cols, rows, c=z, cmap='jet', s=1.)
+        cbar = plt.colorbar(aaa)
+        cbar.set_label('Elapsed Time (Normalized)')
+    else:
+        plt.scatter(cols, rows, c='r', s=1.)
+
     plt.scatter(cols[0], rows[0], marker='s', c='y', label='start')
     plt.scatter(cols[-1], rows[-1], marker='>', c='y', label='end')
 
