@@ -4,6 +4,7 @@ import datetime
 import numpy as np
 from tqdm import tqdm
 
+from tartandriver_utils.ros_utils import stamp_to_time
 
 with open('config.yaml') as f:
         CONFIG = yaml.safe_load(f)
@@ -24,6 +25,97 @@ def sensors_algz(md, connections):
     md['sensors'] = list(set(sensors))
     md['algz'] = list(set(algz))
 
+def get_bag_data(md, reader, connections):
+    """
+    Extract relevant auto data from bag
+    TODO think about config for this
+    """
+    output_data = {
+        'intervention': np.zeros([0, 2]), #[intervention, time]
+        'gps': np.zeros([0, 14]), #[13dof pose, time]
+    }
+
+    all_topics = {
+        'intervention': CONFIG['intervention_topic'],
+        'gps': CONFIG['gps_topic']
+    }
+
+    conn = [c for c in connections if c.topic in all_topics.values()]
+
+    for connection, timestamp, rawdata in tqdm(reader.messages(connections=conn)):
+        msg = reader.deserialize(rawdata, connection.msgtype)
+
+        if connection.topic == all_topics['intervention']:
+            t = stamp_to_time(msg.header.stamp)
+            i = msg.data
+            output_data['intervention'] = np.concatenate([
+                output_data['intervention'],
+                np.array([i, t]).reshape(1, 2)
+            ], axis=0)
+
+        if connection.topic == all_topics['gps']:
+            t = stamp_to_time(msg.header.stamp)
+            posedata = np.array([
+                msg.pose.pose.position.x,
+                msg.pose.pose.position.y,
+                msg.pose.pose.position.z,
+                msg.pose.pose.orientation.x,
+                msg.pose.pose.orientation.y,
+                msg.pose.pose.orientation.z,
+                msg.pose.pose.orientation.w,
+                msg.twist.twist.linear.x,
+                msg.twist.twist.linear.y,
+                msg.twist.twist.linear.z,
+                msg.twist.twist.angular.x,
+                msg.twist.twist.angular.y,
+                msg.twist.twist.angular.z,
+                t
+            ])
+
+            output_data['gps'] = np.concatenate([
+                output_data['gps'],
+                posedata.reshape(1,14)
+            ], axis=0)
+
+    #rescale intervention data to gps timestamps
+    if len(output_data['intervention']) > 0:
+        idata = output_data['intervention'][:, :-1]
+        i_ts = output_data['intervention'][:, -1]
+        gdata = output_data['gps'][:, :-1]
+        gps_ts = output_data['gps'][:, -1]
+
+        gps_data_new = []
+        intervention_data_new = []
+        times_new = []
+
+        for gi, gt in enumerate(gps_ts):
+            dts = np.abs(gt - i_ts)
+            ii = np.argmin(dts, )
+            dtmin = dts[ii]
+
+            if dtmin < 0.1:
+                gps_data_new.append(gdata[gi])
+                intervention_data_new.append(idata[ii])
+                times_new.append(gt)
+
+        gps_data_new = np.stack(gps_data_new, axis=0)
+        intervention_data_new = np.concatenate(intervention_data_new, axis=0)
+        times = np.stack(times_new, axis=0)
+        speed = np.linalg.norm(gps_data_new[:, 7:10], axis=-1)
+
+    else:
+        print('couldnt find intervention data in bag!')
+        gps_data_new = output_data['gps'][:, :-1]
+        times = output_data['gps'][:, -1]
+        intervention_data_new = np.ones(times.shape[0])
+        speed = np.linalg.norm(gps_data_new[:, 7:10], axis=-1)
+    
+    return {
+        'gps': gps_data_new,
+        'speed': speed,
+        'intervention': intervention_data_new,
+        'times': times
+    }
 
 def top_speed(md, reader, connections):
     topic = CONFIG['top_speed']
