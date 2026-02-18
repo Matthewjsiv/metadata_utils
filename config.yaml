@@ -34,6 +34,7 @@ algz:
 intervention_topic: '/mux/intervention'
 # speed_topic: '/odometry/filtered_odom'
 gps_topic: '/odometry/filtered_odom'
+super_odometry_topic: '/superodometry/integrated_to_init'
 
 keywords:
   context:

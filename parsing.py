@@ -33,11 +33,13 @@ def get_bag_data(md, reader, connections):
     output_data = {
         'intervention': np.zeros([0, 2]), #[intervention, time]
         'gps': np.zeros([0, 14]), #[13dof pose, time]
+        'super_odometry': np.zeros([0, 14]) #[13dof pose, time]
     }
 
     all_topics = {
         'intervention': CONFIG['intervention_topic'],
-        'gps': CONFIG['gps_topic']
+        'gps': CONFIG['gps_topic'],
+        'super_odometry': CONFIG['super_odometry_topic']
     }
 
     conn = [c for c in connections if c.topic in all_topics.values()]
@@ -74,6 +76,30 @@ def get_bag_data(md, reader, connections):
 
             output_data['gps'] = np.concatenate([
                 output_data['gps'],
+                posedata.reshape(1,14)
+            ], axis=0)
+
+        if connection.topic == all_topics['super_odometry']:
+            t = stamp_to_time(msg.header.stamp)
+            posedata = np.array([
+                msg.pose.pose.position.x,
+                msg.pose.pose.position.y,
+                msg.pose.pose.position.z,
+                msg.pose.pose.orientation.x,
+                msg.pose.pose.orientation.y,
+                msg.pose.pose.orientation.z,
+                msg.pose.pose.orientation.w,
+                msg.twist.twist.linear.x,
+                msg.twist.twist.linear.y,
+                msg.twist.twist.linear.z,
+                msg.twist.twist.angular.x,
+                msg.twist.twist.angular.y,
+                msg.twist.twist.angular.z,
+                t
+            ])
+
+            output_data['super_odometry'] = np.concatenate([
+                output_data['super_odometry'],
                 posedata.reshape(1,14)
             ], axis=0)
 
@@ -114,7 +140,8 @@ def get_bag_data(md, reader, connections):
         'gps': gps_data_new,
         'speed': speed,
         'intervention': intervention_data_new,
-        'times': times
+        'times': times,
+        'super_odometry': output_data['super_odometry']
     }
 
 def top_speed(md, reader, connections):

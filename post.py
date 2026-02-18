@@ -12,6 +12,8 @@ import matplotlib.pyplot as plt
 
 from gps_plotting import *
 
+from tartandriver_utils.os_utils import load_yaml
+
 with open('config.yaml') as f:
         CONFIG = yaml.safe_load(f)
 
@@ -132,44 +134,51 @@ def main(args):
 
     # print(exp_dirs)
     for dir in tqdm(exp_dirs):
-        fname = os.path.join(prefix, dir)
-        
-        with open(os.path.join(fname, 'info.yaml')) as f:
-            md = yaml.safe_load(f)
+        try:
+            fname = os.path.join(prefix, dir)
+            
+            info_fp = os.path.join(fname, 'info.yaml')
+            if os.path.exists(info_fp):
+                md = load_yaml(info_fp)
+            else:
+                md = {}
 
-        print(fname)
+            print(fname)
 
-        info_dict = get_ros2_bag_info(fname)
-        md['duration'] = info_dict['duration']
-        md['date'] = info_dict['start_time_str']
- 
-        with AnyReader([Path(fname)]) as reader:
-            connections = [c for c in reader.connections]
+            info_dict = get_ros2_bag_info(fname)
+            md['duration'] = info_dict['duration']
+            md['date'] = info_dict['start_time_str']
 
-            parsing.sensors_algz(md, connections)
+            with AnyReader([Path(fname)]) as reader:
+                connections = [c for c in reader.connections]
 
-            bag_data = parsing.get_bag_data(md, reader, connections)
+                parsing.sensors_algz(md, connections)
 
-        md['metrics'] = {}
-        md['metrics']['default'] = compute_default_metrics(bag_data)
-        is_auto = bagdata_is_autonomous(bag_data)
-        if is_auto:
-            print('auto-detected run has auto data. Computing metrics...')
-            md['metrics']['autonomy'] = compute_auto_metrics(bag_data)
+                bag_data = parsing.get_bag_data(md, reader, connections)
 
-        np.savez(os.path.join(fname, 'run_data'), **bag_data)
+            md['metrics'] = {}
+            md['metrics']['default'] = compute_default_metrics(bag_data)
+            is_auto = bagdata_is_autonomous(bag_data)
+            if is_auto:
+                print('auto-detected run has auto data. Computing metrics...')
+                md['metrics']['autonomy'] = compute_auto_metrics(bag_data)
 
-        with open(os.path.join(fname, 'info.yaml'), "w") as f:
-            yaml.dump(md, f)
+            np.savez(os.path.join(fname, 'run_data'), **bag_data)
 
-        ##make gps plots
-        for plt_fn in [
-            basic_gps_plot,
-            speed_gps_plot,
-            intervention_gps_plot,
-            speed_histogram
-        ]:
-            plt_fn(bag_data, fname, tif, legend=False)
+            with open(os.path.join(fname, 'info.yaml'), "w") as f:
+                yaml.dump(md, f)
+
+            ##make gps plots
+            for plt_fn in [
+                basic_gps_plot,
+                speed_gps_plot,
+                intervention_gps_plot,
+                speed_histogram,
+                traj_plot
+            ]:
+                plt_fn(bag_data, fname, tif, legend=False)
+        except:
+            print(f'ruh roh {dir} failled')
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()

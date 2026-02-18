@@ -2,6 +2,18 @@ import os
 import numpy as np
 import matplotlib.pyplot as plt
 
+def traj_plot(bagdata, dir, tif=None, legend=True):
+    traj = bagdata['super_odometry']
+    plt.plot(traj[:, 0], traj[:, 1], c='r')
+    plt.gca().set_aspect(1.)
+    
+    plt.title('Traj')
+    plt.xlabel('X(m)')
+    plt.ylabel('Y(m)')
+    plt.savefig(os.path.join(dir, 'odometry.png'), dpi=300, bbox_inches='tight')
+    plt.clf()
+    plt.close('all')
+
 def basic_gps_plot(bagdata, dir, tif, legend=True, time_plot=True):
     """
     Args:
